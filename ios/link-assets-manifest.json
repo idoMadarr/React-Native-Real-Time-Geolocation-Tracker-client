@@ -1,0 +1,17 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/PloniMLv2AAA-Bold.otf",
+      "sha1": "030aff9d755616c95dfc0328efde59888940471d"
+    },
+    {
+      "path": "assets/fonts/PloniMLv2AAA-Light.otf",
+      "sha1": "865261c89fe2ecec56d837338db0360dd1beccdb"
+    },
+    {
+      "path": "assets/fonts/PloniMLv2AAA-Regular.otf",
+      "sha1": "52feabf5c4ff8cdabef086e08edf205b6a883998"
+    }
+  ]
+}

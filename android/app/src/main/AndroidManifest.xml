@@ -1,7 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -10,6 +15,10 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:supportsRtl="true">
+      <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyC_U1KX78uPhzo0Os4nWV7balb38t0UVZ8"/>
+      <!-- MY PRIVATE KEY: -->
+      <!-- <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBisZujlarLqgWoZ2KtazoV79BDh-BiYvo"/> -->
+      <service android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask" android:foregroundServiceType="shortService"/>
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"

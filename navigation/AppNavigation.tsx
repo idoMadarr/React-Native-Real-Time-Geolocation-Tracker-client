@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {getUniqueId, getManufacturer} from 'react-native-device-info';
 import {navigationRef} from '../utils/rootNavigation';
 import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import {useAppDispatch, useAppSelector} from '../redux/hooks/hooks';
@@ -40,10 +41,13 @@ const AppNavigation = () => {
   }, [message]);
 
   const onSummarize = async (message: BottomSheetActions) => {
+    const deviceId = await getUniqueId();
+    const manufacturer = await getManufacturer();
+
     const res = await message.onSummarize();
     const body = {
       record: res.direction,
-      userId: 'some id',
+      deviceId: `${manufacturer}:${deviceId}`,
     };
     await dispatch(saveRecord(body));
 

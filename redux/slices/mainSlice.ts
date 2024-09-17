@@ -7,6 +7,7 @@ export interface BottomSheetActions {
 }
 
 export interface RecordType {
+  _id: string;
   distance: number;
   averageSpeed: number;
   startTime: Date;
@@ -33,15 +34,15 @@ export const mainSlice = createSlice({
     setBottomSheet: (state, action) => {
       state.message = action.payload;
     },
+    setRecords: (state, action) => {
+      state.recordList = action.payload;
+    },
     setCurrentRecord: (state, action) => {
       state.currentRecord = action.payload;
-    },
-    setRecord: (state, action) => {
-      state.recordList = [...state.recordList, action.payload];
     },
   },
 });
 
-export const {setBottomSheet, setCurrentRecord, setRecord} = mainSlice.actions;
+export const {setBottomSheet, setRecords, setCurrentRecord} = mainSlice.actions;
 
 export default mainSlice.reducer;

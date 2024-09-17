@@ -25,7 +25,7 @@ const TextElement: React.FC<TextElementType> = ({
         ? '1rem'
         : size === 'lg'
         ? '1.4rem'
-        : '2.2rem';
+        : '2.6rem';
 
     return fontSize;
   };

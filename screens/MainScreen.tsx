@@ -6,12 +6,7 @@ import {
   ActivityIndicator,
   Dimensions,
 } from 'react-native';
-import MapView, {
-  LatLng,
-  Marker,
-  Polyline,
-  PROVIDER_GOOGLE,
-} from 'react-native-maps';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {PropDimensions} from '../services/dimensions';
 import StatusBarElement from '../components/Resuable/StatusBarElement';
 import {useMeasurement} from '../utils/useMeasurement';
@@ -19,14 +14,20 @@ import TextElement from '../components/Resuable/TextElement';
 import ButtonElement from '../components/Resuable/ButtonElement';
 import * as Colors from '../assets/colors/palette.json';
 import Animated, {
+  interpolate,
+  useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import {useAppDispatch} from '../redux/hooks/hooks';
+import {useAppDispatch, useAppSelector} from '../redux/hooks/hooks';
 import LinearGradient from 'react-native-linear-gradient';
 import DriveMode from '../components/MainPartials/DriveMode';
 import {setBottomSheet} from '../redux/slices/mainSlice';
+import RecordItem from '../components/MainPartials/RecordItem';
+
+const RECORD_ITEM_WIDTH = PropDimensions.fullWidth * 0.7;
+const SPACER = (PropDimensions.fullWidth - RECORD_ITEM_WIDTH) / 2;
 
 const MainScreen = () => {
   const {currentLocation, startMeasurement, stopMeasurement} = useMeasurement();
@@ -34,20 +35,27 @@ const MainScreen = () => {
   const dispatch = useAppDispatch();
 
   const mapRef: any = useRef(MapView);
+  const recordList = useAppSelector(state => state.mainSlice.recordList);
+  const displayRecordList = [{spacer: true}, ...recordList, {spacer: true}];
 
   const disable = false;
 
-  const buttonScrollX = useSharedValue(0);
-  const cardScrollX = useSharedValue(0);
+  // Animated BG Transition:
   const backgroundScale = useSharedValue(7.2);
-  const driveAnimationX = useSharedValue(0);
-  const driveAnimationOpacity = useSharedValue(0);
+
+  // Animated Elements:
+  const buttonTranslateX = useSharedValue(0);
+  const locationcTranslateX = useSharedValue(0);
+  const lottieOpacity = useSharedValue(0);
+  const recordListOpacity = useSharedValue(1);
+  const recordListX = useSharedValue(0);
 
   const onStart = () => {
-    buttonScrollX.value = PropDimensions.fullWidth;
-    cardScrollX.value = -PropDimensions.fullWidth;
+    buttonTranslateX.value = PropDimensions.fullWidth;
+    locationcTranslateX.value = -PropDimensions.fullWidth;
     backgroundScale.value = 0;
-    driveAnimationOpacity.value = 1;
+    lottieOpacity.value = 1;
+    recordListOpacity.value = 0;
 
     startMeasurement();
   };
@@ -59,25 +67,26 @@ const MainScreen = () => {
         return result;
       },
       onSave: async () => {
-        buttonScrollX.value = 0;
-        cardScrollX.value = 0;
+        buttonTranslateX.value = 0;
+        locationcTranslateX.value = 0;
         backgroundScale.value = 7.2;
-        driveAnimationOpacity.value = 0;
+        lottieOpacity.value = 0;
+        recordListOpacity.value = 1;
       },
     };
 
     dispatch(setBottomSheet(modalActions));
   };
 
-  const buttonScrollXAnimation = useAnimatedStyle(() => {
+  const buttonTranslateXAnimation = useAnimatedStyle(() => {
     return {
-      transform: [{translateX: withTiming(buttonScrollX.value)}],
+      transform: [{translateX: withTiming(buttonTranslateX.value)}],
     };
   });
 
-  const cardScrollXAnimation = useAnimatedStyle(() => {
+  const locationcTranslateXAnimation = useAnimatedStyle(() => {
     return {
-      transform: [{translateX: withTiming(cardScrollX.value)}],
+      transform: [{translateX: withTiming(locationcTranslateX.value)}],
     };
   });
 
@@ -87,11 +96,23 @@ const MainScreen = () => {
     };
   });
 
-  const lottieAnimation = useAnimatedStyle(() => {
+  const lottieOpacityAnimation = useAnimatedStyle(() => {
     return {
-      transform: [{translateX: withTiming(driveAnimationX.value)}],
-      opacity: withTiming(driveAnimationOpacity.value),
+      opacity: withTiming(lottieOpacity.value),
     };
+  });
+
+  const recordListOpacityAnimation = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(recordListOpacity.value),
+      display: recordListOpacity.value === 0 ? 'none' : 'flex',
+    };
+  });
+
+  const onScroll = useAnimatedScrollHandler({
+    onScroll: event => {
+      recordListX.value = event.contentOffset.x;
+    },
   });
 
   const CustomBackground = () => {
@@ -104,13 +125,7 @@ const MainScreen = () => {
     ];
 
     return (
-      <View
-        style={[
-          StyleSheet.absoluteFillObject,
-          {
-            backgroundColor: Colors.white,
-          },
-        ]}>
+      <View style={[StyleSheet.absoluteFillObject, styles.customBackground]}>
         <Animated.View style={[styles.inner, backgroundScaleAnimation]}>
           <LinearGradient
             colors={colors}
@@ -126,7 +141,8 @@ const MainScreen = () => {
 
   const DriveAnimation = () => {
     return (
-      <Animated.View style={[styles.driveModeContainer, lottieAnimation]}>
+      <Animated.View
+        style={[styles.driveModeContainer, lottieOpacityAnimation]}>
         <DriveMode onStop={onStop} />
       </Animated.View>
     );
@@ -139,10 +155,10 @@ const MainScreen = () => {
         backgroundColor={Colors.primary}
       />
       <CustomBackground />
-
       <DriveAnimation />
 
-      <Animated.View style={[styles.mapContainer, cardScrollXAnimation]}>
+      <Animated.View
+        style={[styles.mapContainer, locationcTranslateXAnimation]}>
         <View style={styles.headerMapContainer}>
           <TextElement cStyle={{color: 'black'}}>Here you are:</TextElement>
         </View>
@@ -176,7 +192,44 @@ const MainScreen = () => {
         </View>
       </Animated.View>
 
-      <Animated.View style={[styles.startContainer, buttonScrollXAnimation]}>
+      <Animated.ScrollView
+        style={[recordListOpacityAnimation]}
+        horizontal={true}
+        bounces={false}
+        scrollEventThrottle={16}
+        snapToInterval={RECORD_ITEM_WIDTH}
+        onScroll={onScroll}
+        decelerationRate={'fast'}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{alignItems: 'center'}}>
+        {displayRecordList.map((item, index) => {
+          const animatedScaleStyle = useAnimatedStyle(() => {
+            const scale = interpolate(
+              recordListX.value,
+              [
+                (index - 2) * RECORD_ITEM_WIDTH,
+                (index - 1) * RECORD_ITEM_WIDTH,
+                index * RECORD_ITEM_WIDTH,
+              ],
+              [0.8, 1, 0.8],
+            );
+            return {
+              transform: [{scale}],
+            };
+          });
+
+          if ('spacer' in item)
+            return <View key={index} style={{width: SPACER}} />;
+
+          return (
+            <Animated.View key={item._id} style={[animatedScaleStyle]}>
+              <RecordItem {...item} />
+            </Animated.View>
+          );
+        })}
+      </Animated.ScrollView>
+
+      <Animated.View style={[styles.startContainer, buttonTranslateXAnimation]}>
         <ButtonElement
           backgroundColor={Colors.secondary}
           onPress={onStart}
@@ -249,6 +302,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: '46%',
     top: '30%',
+  },
+  customBackground: {
+    backgroundColor: Colors.white,
   },
 });
 

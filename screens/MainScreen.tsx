@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useRef, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -23,7 +23,12 @@ import Animated, {
 import {useAppDispatch, useAppSelector} from '../redux/hooks/hooks';
 import LinearGradient from 'react-native-linear-gradient';
 import DriveMode from '../components/MainPartials/DriveMode';
-import {setBottomSheet} from '../redux/slices/mainSlice';
+import {
+  RecordType,
+  setAppReady,
+  setBottomSheet,
+  setCurrentRecord,
+} from '../redux/slices/mainSlice';
 import RecordItem from '../components/MainPartials/RecordItem';
 
 const RECORD_ITEM_WIDTH = PropDimensions.fullWidth * 0.7;
@@ -38,8 +43,6 @@ const MainScreen = () => {
   const recordList = useAppSelector(state => state.mainSlice.recordList);
   const displayRecordList = [{spacer: true}, ...recordList, {spacer: true}];
 
-  const disable = false;
-
   // Animated BG Transition:
   const backgroundScale = useSharedValue(7.2);
 
@@ -49,6 +52,10 @@ const MainScreen = () => {
   const lottieOpacity = useSharedValue(0);
   const recordListOpacity = useSharedValue(1);
   const recordListX = useSharedValue(0);
+
+  useEffect(() => {
+    dispatch(setAppReady());
+  }, []);
 
   const onStart = () => {
     buttonTranslateX.value = PropDimensions.fullWidth;
@@ -62,7 +69,7 @@ const MainScreen = () => {
 
   const onStop = async () => {
     const modalActions = {
-      onSummarize: async () => {
+      fetchMeasurement: async () => {
         const result = await stopMeasurement();
         return result;
       },
@@ -75,7 +82,12 @@ const MainScreen = () => {
       },
     };
 
-    dispatch(setBottomSheet(modalActions));
+    dispatch(setBottomSheet({type: 'actions', content: modalActions}));
+  };
+
+  const onRecord = async (content: RecordType) => {
+    await dispatch(setCurrentRecord(content));
+    await dispatch(setBottomSheet({type: 'details'}));
   };
 
   const buttonTranslateXAnimation = useAnimatedStyle(() => {
@@ -160,10 +172,14 @@ const MainScreen = () => {
       <Animated.View
         style={[styles.mapContainer, locationcTranslateXAnimation]}>
         <View style={styles.headerMapContainer}>
-          <TextElement cStyle={{color: 'black'}}>Here you are:</TextElement>
+          <TextElement
+            fontWeight={'bold'}
+            cStyle={{textAlign: 'center', color: Colors.secondary}}>
+            - Current Location -
+          </TextElement>
         </View>
         <View style={styles.map}>
-          {currentLocation && disable ? (
+          {currentLocation ? (
             <MapView
               ref={mapRef}
               style={{flex: 1}}
@@ -174,9 +190,10 @@ const MainScreen = () => {
                 latitudeDelta: 0.1,
                 longitudeDelta: 0.1,
               }}
+              liteMode={true}
               provider={PROVIDER_GOOGLE}
-              showsUserLocation={true}
-              showsMyLocationButton={true}>
+              showsUserLocation={false}
+              showsMyLocationButton={false}>
               <Marker
                 coordinate={currentLocation.coords}
                 pinColor={Colors.warning}
@@ -192,42 +209,52 @@ const MainScreen = () => {
         </View>
       </Animated.View>
 
-      <Animated.ScrollView
-        style={[recordListOpacityAnimation]}
-        horizontal={true}
-        bounces={false}
-        scrollEventThrottle={16}
-        snapToInterval={RECORD_ITEM_WIDTH}
-        onScroll={onScroll}
-        decelerationRate={'fast'}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{alignItems: 'center'}}>
-        {displayRecordList.map((item, index) => {
-          const animatedScaleStyle = useAnimatedStyle(() => {
-            const scale = interpolate(
-              recordListX.value,
-              [
-                (index - 2) * RECORD_ITEM_WIDTH,
-                (index - 1) * RECORD_ITEM_WIDTH,
-                index * RECORD_ITEM_WIDTH,
-              ],
-              [0.8, 1, 0.8],
+      {recordList.length >= 2 ? (
+        <Animated.ScrollView
+          style={[recordListOpacityAnimation]}
+          horizontal={true}
+          bounces={false}
+          scrollEventThrottle={16}
+          snapToInterval={RECORD_ITEM_WIDTH}
+          onScroll={onScroll}
+          decelerationRate={'fast'}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{alignItems: 'center'}}>
+          {displayRecordList.map((item, index) => {
+            const animatedScaleStyle = useAnimatedStyle(() => {
+              const scale = interpolate(
+                recordListX.value,
+                [
+                  (index - 2) * RECORD_ITEM_WIDTH,
+                  (index - 1) * RECORD_ITEM_WIDTH,
+                  index * RECORD_ITEM_WIDTH,
+                ],
+                [0.8, 1, 0.8],
+              );
+              return {
+                transform: [{scale}],
+              };
+            });
+
+            if ('spacer' in item)
+              return <View key={index} style={{width: SPACER}} />;
+
+            return (
+              <Animated.View key={item._id} style={[animatedScaleStyle]}>
+                <RecordItem {...item} onRecord={onRecord.bind(this, item)} />
+              </Animated.View>
             );
-            return {
-              transform: [{scale}],
-            };
-          });
-
-          if ('spacer' in item)
-            return <View key={index} style={{width: SPACER}} />;
-
-          return (
-            <Animated.View key={item._id} style={[animatedScaleStyle]}>
-              <RecordItem {...item} />
-            </Animated.View>
-          );
-        })}
-      </Animated.ScrollView>
+          })}
+        </Animated.ScrollView>
+      ) : recordList.length === 1 ? (
+        <Animated.View
+          style={[{alignItems: 'center'}, recordListOpacityAnimation]}>
+          <RecordItem
+            {...recordList[0]}
+            onRecord={onRecord.bind(this, recordList[0])}
+          />
+        </Animated.View>
+      ) : null}
 
       <Animated.View style={[styles.startContainer, buttonTranslateXAnimation]}>
         <ButtonElement

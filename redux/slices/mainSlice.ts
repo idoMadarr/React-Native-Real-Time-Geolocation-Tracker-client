@@ -2,7 +2,7 @@ import {GeolocationResponse} from '@react-native-community/geolocation';
 import {createSlice} from '@reduxjs/toolkit';
 
 export interface BottomSheetActions {
-  onSummarize(): {direction: GeolocationResponse[]; startTime: Date};
+  fetchMeasurement(): {direction: GeolocationResponse[]; startTime: Date};
   onSave(): void;
 }
 
@@ -13,29 +13,46 @@ export interface RecordType {
   startTime: Date;
   endTime: Date;
   waypoints: {longitude: number; latitude: number}[];
+  image?: string | null;
 }
 
 interface RootStateApp {
-  message: BottomSheetActions | null;
+  appReady: boolean;
   recordList: RecordType[];
   currentRecord: RecordType | null;
+  bottomSheet: {
+    type: string;
+    content?: BottomSheetActions;
+  } | null;
 }
 
 const initialState: RootStateApp = {
-  message: null,
+  appReady: false,
   recordList: [],
   currentRecord: null,
+  bottomSheet: null,
 };
 
 export const mainSlice = createSlice({
   name: 'mainSlice',
   initialState,
   reducers: {
+    setAppReady: state => {
+      state.appReady = true;
+    },
     setBottomSheet: (state, action) => {
-      state.message = action.payload;
+      state.bottomSheet = action.payload;
     },
     setRecords: (state, action) => {
       state.recordList = action.payload;
+    },
+    updateRecordList: (state, action) => {
+      // const recordListCopy: RecordType[] = JSON.parse(
+      //   JSON.stringify(state.recordList),
+      // );
+      // recordListCopy.push(action.payload);
+      // state.recordList = recordListCopy;
+      // state.recordList.push(action.payload);
     },
     setCurrentRecord: (state, action) => {
       state.currentRecord = action.payload;
@@ -43,6 +60,12 @@ export const mainSlice = createSlice({
   },
 });
 
-export const {setBottomSheet, setRecords, setCurrentRecord} = mainSlice.actions;
+export const {
+  setAppReady,
+  setBottomSheet,
+  setRecords,
+  updateRecordList,
+  setCurrentRecord,
+} = mainSlice.actions;
 
 export default mainSlice.reducer;

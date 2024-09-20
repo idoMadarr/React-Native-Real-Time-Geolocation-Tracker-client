@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import Colors from '../../assets/colors/palette.json';
 import TextElement from '../Resuable/TextElement';
@@ -10,6 +10,13 @@ interface StopDriveModalPropsType {
 }
 
 const StopDriveModal: React.FC<StopDriveModalPropsType> = ({onSummarize}) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onPress = () => {
+    setIsLoading(prevState => !prevState);
+    onSummarize();
+  };
+
   return (
     <View style={styles.modalContainer}>
       <TextElement fontSize={'lg'} fontWeight={'bold'}>
@@ -23,10 +30,11 @@ const StopDriveModal: React.FC<StopDriveModalPropsType> = ({onSummarize}) => {
       <ButtonElement
         title={'Summarize'}
         fontSize={'m'}
-        cStyle={{width: 100, height: 35}}
+        cStyle={styles.button}
         titleColor={Colors.white}
+        isLoading={isLoading}
         backgroundColor={Colors.secondary}
-        onPress={onSummarize}
+        onPress={onPress}
       />
     </View>
   );
@@ -34,10 +42,14 @@ const StopDriveModal: React.FC<StopDriveModalPropsType> = ({onSummarize}) => {
 
 const styles = StyleSheet.create({
   modalContainer: {
-    height: PropDimensions.fullHeight * 0.18,
+    height: PropDimensions.fullHeight * 0.22,
     width: PropDimensions.fullWidth,
     justifyContent: 'space-evenly',
     paddingHorizontal: '5%',
+  },
+  button: {
+    width: 100,
+    height: 35,
   },
 });
 

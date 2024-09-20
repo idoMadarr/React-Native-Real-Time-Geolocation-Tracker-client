@@ -28,39 +28,46 @@ const Stack = createNativeStackNavigator();
 const AppNavigation = () => {
   const dispatch = useAppDispatch();
 
-  const message = useAppSelector(state => state.mainSlice.message);
+  const appReady = useAppSelector(state => state.mainSlice.appReady);
+  const bottomSheet = useAppSelector(state => state.mainSlice.bottomSheet);
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const stopDriveRef = useSharedValue(1);
   const saveDriveRef = useSharedValue(0);
 
   useEffect(() => {
-    if (message) {
-      bottomSheetRef.current?.snapToIndex(0);
+    if (bottomSheet) {
+      if (bottomSheet.type === 'actions') {
+        bottomSheetRef.current?.snapToIndex(0);
+        return;
+      }
+      if (bottomSheet.type === 'details') {
+        extendModal('85%');
+      }
     }
-  }, [message]);
+  }, [bottomSheet]);
 
-  const onSummarize = async (message: BottomSheetActions) => {
+  const onSummarize = async (content: BottomSheetActions) => {
     const deviceId = await getUniqueId();
     const manufacturer = await getManufacturer();
+    const measurement = await content.fetchMeasurement();
 
-    const res = await message.onSummarize();
     const body = {
-      record: res.direction,
+      record: measurement.direction,
       deviceId: `${manufacturer}:${deviceId}`,
     };
+
     await dispatch(saveRecord(body));
 
     stopDriveRef.value = 0;
     saveDriveRef.value = 1;
-
-    extendModal('76%');
+    extendModal('85%');
   };
 
-  const onDone = (message: BottomSheetActions) => {
+  const onDone = async (actions?: BottomSheetActions) => {
     closeBottomSheet();
     setTimeout(() => {
-      message.onSave();
+      if (actions && 'onSave' in actions) actions.onSave();
       stopDriveRef.value = 1;
       saveDriveRef.value = 0;
       dispatch(setBottomSheet(null));
@@ -78,7 +85,11 @@ const AppNavigation = () => {
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
-        onPress={() => dispatch(setBottomSheet(null))}
+        pressBehavior={'none'}
+        onPress={() => {
+          // saveDriveRef.value = 0;
+          dispatch(setBottomSheet(null));
+        }}
         {...props}
         disappearsOnIndex={-1}
       />
@@ -103,14 +114,24 @@ const AppNavigation = () => {
   const snapPoints = useMemo(() => ['22%', '40%', '60%', '80%', '100%'], []);
 
   let modalComponent: React.JSX.Element = <View />;
-  if (message) {
+
+  if (bottomSheet?.type === 'details') {
+    modalComponent = <SummarizeModal onDone={onDone} buttonTitle={'Close'} />;
+  }
+
+  if (bottomSheet?.type === 'actions') {
     modalComponent = (
       <View style={styles.bottomSheetHeight}>
         <Animated.View style={[stopDriveOpacityAnimation]}>
-          <StopDriveModal onSummarize={onSummarize.bind(this, message)} />
+          <StopDriveModal
+            onSummarize={onSummarize.bind(this, bottomSheet.content!)}
+          />
         </Animated.View>
-        <Animated.View style={[saveDriveOpacityAnimation, styles.content]}>
-          <SummarizeModal onDone={onDone.bind(this, message)} />
+        <Animated.View style={[saveDriveOpacityAnimation]}>
+          <SummarizeModal
+            onDone={onDone.bind(this, bottomSheet.content)}
+            buttonTitle={'Save & Done'}
+          />
         </Animated.View>
       </View>
     );
@@ -119,7 +140,7 @@ const AppNavigation = () => {
   return (
     <NavigationContainer ref={navigationRef}>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name={'splash'} component={SplashScreen} />
+        {!appReady && <Stack.Screen name={'splash'} component={SplashScreen} />}
         <Stack.Screen name={'instructions'} component={InstructionsScreen} />
         <Stack.Screen name={'main'} component={MainScreen} />
       </Stack.Navigator>

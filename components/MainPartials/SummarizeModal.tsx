@@ -8,24 +8,45 @@ import MapView, {
   Polyline,
   PROVIDER_GOOGLE,
 } from 'react-native-maps';
+import ViewShot from 'react-native-view-shot';
 import {PropDimensions} from '../../services/dimensions';
 import TextElement from '../Resuable/TextElement';
-import {useAppSelector} from '../../redux/hooks/hooks';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks/hooks';
+import {updateScreenShot} from '../../redux/actions/mainActions';
 
 interface SummarizeModalPropsType {
   onDone(): void;
+  buttonTitle: string;
 }
 
-const SummarizeModal: React.FC<SummarizeModalPropsType> = ({onDone}) => {
+const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
+  onDone,
+  buttonTitle,
+}) => {
+  const dispatch = useAppDispatch();
+
   const currentRecord = useAppSelector(state => state.mainSlice.currentRecord);
 
-  const mapRef: any = useRef(MapView);
-
   if (!currentRecord) return;
+
+  const mapRef: any = useRef(MapView);
+  const viewshotRef: any = useRef();
+
+  const saveNDone = async () => {
+    if (buttonTitle === 'Close') {
+      return onDone();
+    }
+
+    viewshotRef.current.capture().then(async (file: string) => {
+      await dispatch(updateScreenShot(currentRecord._id, file));
+      onDone();
+    });
+  };
+
   const recordStartTime = new Date(currentRecord.startTime).toLocaleString(
     'en-US',
     {
-      year: 'numeric',
+      // year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
@@ -37,7 +58,7 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({onDone}) => {
   const recordEndTime = new Date(currentRecord.endTime).toLocaleString(
     'en-US',
     {
-      year: 'numeric',
+      // year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
@@ -48,7 +69,7 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({onDone}) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.map}>
+      <ViewShot ref={viewshotRef} style={styles.map}>
         <MapView
           ref={mapRef}
           style={{width: '100%', height: '100%'}}
@@ -59,8 +80,9 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({onDone}) => {
             longitudeDelta: 0.1,
           }}
           provider={PROVIDER_GOOGLE}
-          showsUserLocation={true}
-          showsMyLocationButton={true}>
+          // liteMode={true}
+          showsUserLocation={false}
+          showsMyLocationButton={false}>
           <Marker coordinate={currentRecord.waypoints[0]} />
           <Marker
             coordinate={
@@ -73,18 +95,34 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({onDone}) => {
             strokeColor={'#000dff'}
           />
         </MapView>
-      </View>
+      </ViewShot>
       <View style={styles.details}>
-        <TextElement>{`Total Distance: ${currentRecord.distance} km`}</TextElement>
-        <TextElement>{`Average Speed: ${currentRecord.averageSpeed} km/h`}</TextElement>
-        <TextElement>{`Start Time: ${recordStartTime}`}</TextElement>
-        <TextElement>{`End Time: ${recordEndTime}`}</TextElement>
+        <View style={styles.section}>
+          <TextElement>Total Distance:</TextElement>
+          <TextElement
+            fontWeight={'bold'}>{`${currentRecord.distance} km`}</TextElement>
+        </View>
+        <View style={styles.section}>
+          <TextElement>Average Speed:</TextElement>
+          <TextElement
+            fontWeight={
+              'bold'
+            }>{`${currentRecord.averageSpeed} km/h`}</TextElement>
+        </View>
+        <View style={styles.section}>
+          <TextElement>Start Time:</TextElement>
+          <TextElement fontWeight={'bold'}>{recordStartTime}</TextElement>
+        </View>
+        <View style={styles.section}>
+          <TextElement>End Time:</TextElement>
+          <TextElement fontWeight={'bold'}>{recordEndTime}</TextElement>
+        </View>
       </View>
       <ButtonElement
-        title={'Save & Done'}
+        title={buttonTitle}
         titleColor={Colors.white}
         backgroundColor={Colors.primary}
-        onPress={onDone}
+        onPress={saveNDone}
         cStyle={styles.button}
       />
     </View>
@@ -93,10 +131,11 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({onDone}) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: PropDimensions.fullHeight * 0.74,
+    height: PropDimensions.fullHeight * 0.85,
     justifyContent: 'space-between',
     borderRadius: 16,
     overflow: 'hidden',
+    paddingVertical: '4%',
   },
   details: {
     flex: 1,
@@ -106,14 +145,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   section: {
-    height: '50%',
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
   },
   map: {
-    width: PropDimensions.fullWidth,
-    height: PropDimensions.fullHeight * 0.5,
+    width: PropDimensions.fullWidth * 0.9,
+    height: PropDimensions.fullHeight * 0.6,
+    alignSelf: 'center',
+    borderRadius: 16,
+    overflow: 'hidden',
   },
   button: {
     alignSelf: 'center',

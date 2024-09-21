@@ -187,8 +187,8 @@ const MainScreen = () => {
                 latitude: currentLocation.coords.latitude,
                 longitude: currentLocation.coords.longitude,
                 // Delta values is the inital scoop view of the map (zoom)
-                latitudeDelta: 0.1,
-                longitudeDelta: 0.1,
+                latitudeDelta: 0.002,
+                longitudeDelta: 0.002,
               }}
               liteMode={true}
               provider={PROVIDER_GOOGLE}

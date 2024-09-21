@@ -68,15 +68,15 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
 
   return (
     <View style={styles.container}>
-      <ViewShot ref={viewshotRef} style={styles.map}>
+      <ViewShot ref={viewshotRef} style={styles.viewShotContainer}>
         <MapView
           ref={mapRef}
-          style={{width: '100%', height: '100%'}}
+          style={styles.map}
           initialRegion={{
             latitude: currentRecord.waypoints[0].latitude,
             longitude: currentRecord.waypoints[0].longitude,
-            latitudeDelta: 0.1,
-            longitudeDelta: 0.1,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
           }}
           provider={PROVIDER_GOOGLE}
           // liteMode={true}
@@ -87,6 +87,7 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
             coordinate={
               currentRecord.waypoints[currentRecord.waypoints.length - 1]
             }
+            pinColor={Colors.secondary}
           />
           <Polyline
             coordinates={currentRecord.waypoints.map((item: LatLng) => item)}
@@ -136,6 +137,17 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     paddingVertical: '4%',
   },
+  viewShotContainer: {
+    width: PropDimensions.fullWidth * 0.9,
+    height: PropDimensions.fullHeight * 0.6,
+    alignSelf: 'center',
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+  },
   details: {
     flex: 1,
     width: PropDimensions.standardWidth,
@@ -147,13 +159,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
-  },
-  map: {
-    width: PropDimensions.fullWidth * 0.9,
-    height: PropDimensions.fullHeight * 0.6,
-    alignSelf: 'center',
-    borderRadius: 16,
-    overflow: 'hidden',
   },
   button: {
     alignSelf: 'center',

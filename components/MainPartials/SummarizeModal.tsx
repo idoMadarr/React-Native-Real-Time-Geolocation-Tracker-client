@@ -13,21 +13,20 @@ import {PropDimensions} from '../../services/dimensions';
 import TextElement from '../Resuable/TextElement';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks/hooks';
 import {updateScreenShot} from '../../redux/actions/mainActions';
+import {RecordType} from '../../redux/slices/mainSlice';
 
 interface SummarizeModalPropsType {
   onDone(): void;
   buttonTitle: string;
+  currentRecord: RecordType;
 }
 
 const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
   onDone,
   buttonTitle,
+  currentRecord,
 }) => {
   const dispatch = useAppDispatch();
-
-  const currentRecord = useAppSelector(state => state.mainSlice.currentRecord);
-
-  if (!currentRecord) return;
 
   const mapRef: any = useRef(MapView);
   const viewshotRef: any = useRef();
@@ -81,7 +80,7 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
           }}
           provider={PROVIDER_GOOGLE}
           // liteMode={true}
-          showsUserLocation={false}
+          showsUserLocation={true}
           showsMyLocationButton={false}>
           <Marker coordinate={currentRecord.waypoints[0]} />
           <Marker
@@ -91,8 +90,8 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
           />
           <Polyline
             coordinates={currentRecord.waypoints.map((item: LatLng) => item)}
-            strokeWidth={4}
-            strokeColor={'#000dff'}
+            strokeWidth={3}
+            strokeColor={Colors.primary}
           />
         </MapView>
       </ViewShot>

@@ -30,6 +30,7 @@ const AppNavigation = () => {
 
   const appReady = useAppSelector(state => state.mainSlice.appReady);
   const bottomSheet = useAppSelector(state => state.mainSlice.bottomSheet);
+  const currentRecord = useAppSelector(state => state.mainSlice.currentRecord);
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const stopDriveRef = useSharedValue(1);
@@ -115,8 +116,14 @@ const AppNavigation = () => {
 
   let modalComponent: React.JSX.Element = <View />;
 
-  if (bottomSheet?.type === 'details') {
-    modalComponent = <SummarizeModal onDone={onDone} buttonTitle={'Close'} />;
+  if (bottomSheet?.type === 'details' && currentRecord) {
+    modalComponent = (
+      <SummarizeModal
+        onDone={onDone}
+        buttonTitle={'Close'}
+        currentRecord={currentRecord}
+      />
+    );
   }
 
   if (bottomSheet?.type === 'actions') {
@@ -128,10 +135,13 @@ const AppNavigation = () => {
           />
         </Animated.View>
         <Animated.View style={[saveDriveOpacityAnimation]}>
-          <SummarizeModal
-            onDone={onDone.bind(this, bottomSheet.content)}
-            buttonTitle={'Save & Done'}
-          />
+          {currentRecord && (
+            <SummarizeModal
+              onDone={onDone.bind(this, bottomSheet.content)}
+              buttonTitle={'Save & Done'}
+              currentRecord={currentRecord}
+            />
+          )}
         </Animated.View>
       </View>
     );

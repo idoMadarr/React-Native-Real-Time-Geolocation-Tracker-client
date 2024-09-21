@@ -70,7 +70,7 @@ export const useMeasurement = () => {
     while (backgroundServer.isRunning()) {
       Geolocation.getCurrentPosition(
         (position: GeolocationResponse) => {
-          console.log(directionRef);
+          console.log(position);
           directionRef.current.push(position);
         },
         error => {
@@ -83,6 +83,7 @@ export const useMeasurement = () => {
           interval: 5000, // Update interval (in milliseconds), which is 5 sec
           fastestInterval: 5000, // Fastest update interval (in milliseconds)
           timeout: 5000,
+          maximumAge: 0,
         },
       );
 

@@ -50,16 +50,16 @@ export const useMeasurement = () => {
     if (directionRef.current) {
       //   drivingTime();
       await backgroundServer.stop();
+      Alert.alert('Title', JSON.stringify(directionRef.current));
+      const driveRes = {
+        direction: directionRef.current,
+        startTime: startTime.current,
+      };
+      directionRef.current = [];
+      startTime.current = null;
+
+      return driveRes;
     }
-
-    const driveRes = {
-      direction: directionRef.current,
-      startTime: startTime.current,
-    };
-    directionRef.current = [];
-    startTime.current = null;
-
-    return driveRes;
   };
 
   const backgroundTask = async (taskDataArguments: any) => {
@@ -70,6 +70,7 @@ export const useMeasurement = () => {
     while (backgroundServer.isRunning()) {
       Geolocation.getCurrentPosition(
         (position: GeolocationResponse) => {
+          console.log(directionRef);
           directionRef.current.push(position);
         },
         error => {

@@ -5,18 +5,15 @@ import {
   setRecords,
   updateRecordList,
 } from '../slices/mainSlice';
-import Config from 'react-native-config';
-
-const domain = Config.real_device_localhost;
 
 export const saveRecord = (body: any) => async (dispatch: Dispatch) => {
-  const data = await axiosInstance.post(`${domain}/summarize`, body);
+  const data = await axiosInstance.post('/summarize', body);
   dispatch(setCurrentRecord(data));
 };
 
 export const updateScreenShot =
   (recordId: string, viewShot: string) => async (dispatch: Dispatch) => {
-    const updateRecord = await axiosInstance.post(`${domain}/screen-shot`, {
+    const updateRecord = await axiosInstance.post('/screen-shot', {
       recordId,
       viewShot,
     });
@@ -25,7 +22,7 @@ export const updateScreenShot =
 
 export const fetchRecords =
   (deviceId: string) => async (dispatch: Dispatch) => {
-    const data = await axiosInstance.post(`${domain}/device-records`, {
+    const data = await axiosInstance.post('/device-records', {
       deviceId,
     });
 

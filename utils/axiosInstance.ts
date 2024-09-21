@@ -3,7 +3,8 @@ import Config from 'react-native-config';
 
 const axiosInstance = axios.create({
   // baseURL: Config.localhost,
-  baseURL: Config.real_device_localhost,
+  // baseURL: Config.real_device_localhost,
+  baseURL: Config.production,
 });
 
 axiosInstance.defaults.timeout = 40000;

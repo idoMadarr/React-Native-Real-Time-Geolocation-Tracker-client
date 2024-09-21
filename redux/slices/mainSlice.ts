@@ -44,7 +44,9 @@ export const mainSlice = createSlice({
       state.bottomSheet = action.payload;
     },
     setRecords: (state, action) => {
-      state.recordList = action.payload;
+      if (action.payload) {
+        state.recordList = action.payload;
+      }
     },
     updateRecordList: (state, action) => {
       // const recordListCopy: RecordType[] = JSON.parse(

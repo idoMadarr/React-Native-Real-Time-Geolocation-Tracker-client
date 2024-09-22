@@ -7,8 +7,10 @@ import {
   Linking,
   AppState,
   Image,
+  NativeModules,
 } from 'react-native';
 import StatusBarElement from '../components/Resuable/StatusBarElement';
+import {useAppDispatch} from '../redux/hooks/hooks';
 import {PropDimensions} from '../services/dimensions';
 import Step from '../components/InstructionsPartials/Step';
 import {steps, constants} from '../fixtures/instructions-steps.json';
@@ -19,6 +21,9 @@ import {
 } from '../utils/permissions';
 import {navigate} from '../utils/rootNavigation';
 import * as Colors from '../assets/colors/palette.json';
+import {setAppReady} from '../redux/slices/mainSlice';
+
+const {LocationServices} = NativeModules;
 
 const bgs = [Colors.tertiary, '#5B99C2', '#445069', Colors.primary];
 
@@ -30,6 +35,8 @@ const images: any = {
 };
 
 const InstructionsScreen = () => {
+  const dispatch = useAppDispatch();
+
   const flatListRef = useRef<any>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
   const appState = useRef(AppState.currentState);
@@ -41,9 +48,13 @@ const InstructionsScreen = () => {
   const [backgroundLocationStatus, setBackgroundLocationStatus] = useState<
     boolean | null
   >(null);
+  const [gpsLocationStatus, setLocationGpsStatus] = useState<boolean | null>(
+    null,
+  );
 
   useEffect(() => {
     initInstructions();
+    dispatch(setAppReady());
   }, []);
 
   useEffect(() => {
@@ -66,9 +77,11 @@ const InstructionsScreen = () => {
   const initInstructions = async () => {
     const forgroundStatus = await checkForgroundLocation();
     const backgroundStatus = await checkBackgroundLocation();
+    const gpsStatus = await LocationServices.isGPSEnabled();
 
     setForgroundLocationStatus(forgroundStatus);
     setBackgroundLocationStatus(backgroundStatus);
+    setLocationGpsStatus(gpsStatus);
   };
 
   const Indicator = ({scrollX}: {scrollX: Animated.Value}) => {
@@ -159,7 +172,11 @@ const InstructionsScreen = () => {
 
   const handleProgress = async (step: number) => {
     switch (step) {
-      case constants.WELCOME:
+      case constants.GPS:
+        if (!gpsLocationStatus) {
+          LocationServices.openGPSSettings();
+          break;
+        }
         nextStep();
         break;
 
@@ -230,6 +247,8 @@ const InstructionsScreen = () => {
               ? backgroundLocationStatus
               : item.id === constants.DONE
               ? forgroundLocationStatus && backgroundLocationStatus
+              : item.id === constants.GPS
+              ? gpsLocationStatus
               : true;
 
           return (

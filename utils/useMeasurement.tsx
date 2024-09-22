@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import backgroundServer from 'react-native-background-actions';
 import Geolocation, {
+  GeolocationError,
   GeolocationResponse,
 } from '@react-native-community/geolocation';
 import {Alert} from 'react-native';
@@ -74,7 +75,7 @@ export const useMeasurement = () => {
           directionRef.current.push(position);
         },
         error => {
-          Alert.alert('GPS Error', JSON.stringify(error));
+          terminateMeasurement(error);
         },
         {
           enableHighAccuracy: true,
@@ -89,6 +90,11 @@ export const useMeasurement = () => {
 
       await sleep(delay);
     }
+  };
+
+  const terminateMeasurement = (error: GeolocationError) => {
+    // if (error.)
+    Alert.alert('GPS Error', JSON.stringify(error));
   };
 
   const fetchCurrentLocation = () => {

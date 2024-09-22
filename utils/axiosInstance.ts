@@ -7,7 +7,7 @@ const axiosInstance = axios.create({
   baseURL: Config.production,
 });
 
-axiosInstance.defaults.timeout = 40000;
+axiosInstance.defaults.timeout = 90000;
 
 axiosInstance.interceptors.response.use(
   response => {

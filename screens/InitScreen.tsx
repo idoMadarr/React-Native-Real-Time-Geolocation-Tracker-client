@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, StyleSheet, SafeAreaView} from 'react-native';
+import {View, StyleSheet, SafeAreaView, NativeModules} from 'react-native';
 import {navigate} from '../utils/rootNavigation';
 import StatusBarElement from '../components/Resuable/StatusBarElement';
 import LottieView from 'lottie-react-native';
@@ -15,7 +15,9 @@ import {
 import {fetchRecords} from '../redux/actions/mainActions';
 import {getManufacturer, getUniqueId} from 'react-native-device-info';
 
-const SplashScreen = () => {
+const {LocationServices} = NativeModules;
+
+const InitScreen = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -30,9 +32,14 @@ const SplashScreen = () => {
 
     const forgroundStatus = await checkForgroundLocation();
     const backgroundStatus = await checkBackgroundLocation();
+    const isGPSEnabled = await LocationServices.isGPSEnabled();
 
     await dispatch(fetchRecords(`${manufacturer}:${deviceId}`));
-    navigate(forgroundStatus && backgroundStatus ? 'main' : 'instructions');
+    navigate(
+      forgroundStatus && backgroundStatus && isGPSEnabled
+        ? 'main'
+        : 'instructions',
+    );
   };
 
   const CustomBackground = () => {
@@ -126,4 +133,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SplashScreen;
+export default InitScreen;

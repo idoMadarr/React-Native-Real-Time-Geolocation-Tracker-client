@@ -18,7 +18,7 @@ import Colors from '../assets/colors/palette.json';
 import {saveRecord} from '../redux/actions/mainActions';
 
 // Screens
-import SplashScreen from '../screens/SplashScreen';
+import InitScreen from '../screens/InitScreen';
 import MainScreen from '../screens/MainScreen';
 import InstructionsScreen from '../screens/InstructionsScreen';
 import StopDriveModal from '../components/MainPartials/StopDriveModal';
@@ -49,9 +49,9 @@ const AppNavigation = () => {
   }, [bottomSheet]);
 
   const onSummarize = async (content: BottomSheetActions) => {
+    const measurement = await content.fetchMeasurement();
     const deviceId = await getUniqueId();
     const manufacturer = await getManufacturer();
-    const measurement = await content.fetchMeasurement();
 
     const body = {
       record: measurement.direction,
@@ -150,7 +150,7 @@ const AppNavigation = () => {
   return (
     <NavigationContainer ref={navigationRef}>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        {!appReady && <Stack.Screen name={'splash'} component={SplashScreen} />}
+        {!appReady && <Stack.Screen name={'splash'} component={InitScreen} />}
         <Stack.Screen name={'instructions'} component={InstructionsScreen} />
         <Stack.Screen name={'main'} component={MainScreen} />
       </Stack.Navigator>

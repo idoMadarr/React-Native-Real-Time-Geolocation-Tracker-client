@@ -261,15 +261,9 @@ const MainScreen = () => {
           backgroundColor={Colors.secondary}
           onPress={onStart}
           fontWeight={'bold'}
-          title={'START\nnew drive'}
+          title={'START'}
           titleColor={Colors.white}
-          cStyle={{
-            width: PropDimensions.circleButton,
-            height: PropDimensions.circleButton,
-            borderRadius: 90,
-            elevation: 8,
-            marginBottom: '6%',
-          }}
+          cStyle={styles.startButton}
         />
         <TextElement fontWeight={'demi-bold'}>
           Ready to hit the road? Press the button to start tracking your drive
@@ -324,6 +318,13 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height * 0.3,
     position: 'absolute',
     top: '36%',
+  },
+  startButton: {
+    width: PropDimensions.circleButton,
+    height: PropDimensions.circleButton,
+    borderRadius: 90,
+    elevation: 8,
+    marginBottom: '6%',
   },
   spinner: {
     position: 'absolute',

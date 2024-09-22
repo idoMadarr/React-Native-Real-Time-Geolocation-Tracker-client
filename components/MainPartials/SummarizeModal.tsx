@@ -79,7 +79,6 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
             longitudeDelta: 0.01,
           }}
           provider={PROVIDER_GOOGLE}
-          // liteMode={true}
           showsUserLocation={true}
           showsMyLocationButton={false}>
           <Marker coordinate={currentRecord.waypoints[0]} />
@@ -99,15 +98,16 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
       <View style={styles.details}>
         <View style={styles.section}>
           <TextElement>Total Distance:</TextElement>
-          <TextElement
-            fontWeight={'bold'}>{`${currentRecord.distance} km`}</TextElement>
+          <TextElement fontWeight={'bold'}>{`${currentRecord.distance.toFixed(
+            2,
+          )} km`}</TextElement>
         </View>
         <View style={styles.section}>
           <TextElement>Average Speed:</TextElement>
           <TextElement
-            fontWeight={
-              'bold'
-            }>{`${currentRecord.averageSpeed} km/h`}</TextElement>
+            fontWeight={'bold'}>{`${currentRecord.averageSpeed.toFixed(
+            0,
+          )} km/h`}</TextElement>
         </View>
         <View style={styles.section}>
           <TextElement>Start Time:</TextElement>

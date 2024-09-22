@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, Image} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {PropDimensions} from '../../services/dimensions';
 import TextElement from '../Resuable/TextElement';
 import ButtonElement from '../Resuable/ButtonElement';
@@ -12,6 +12,7 @@ interface StepPropsType {
   action: string;
   handleProgress(): void;
   statusButton: boolean;
+  children: JSX.Element;
 }
 
 const Step: React.FC<StepPropsType> = ({
@@ -21,15 +22,11 @@ const Step: React.FC<StepPropsType> = ({
   action,
   handleProgress,
   statusButton,
+  children,
 }) => {
   return (
     <View style={styles.screen}>
-      <View style={styles.imageSection}>
-        <Image
-          source={require(`../../assets/images/folded-map.png`)}
-          style={styles.image}
-        />
-      </View>
+      <View style={styles.imageSection}>{children}</View>
       <View style={styles.descriptionSection}>
         <View>
           <TextElement

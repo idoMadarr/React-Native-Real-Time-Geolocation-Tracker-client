@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Linking,
   AppState,
+  Image,
 } from 'react-native';
 import StatusBarElement from '../components/Resuable/StatusBarElement';
 import {PropDimensions} from '../services/dimensions';
@@ -20,6 +21,13 @@ import {navigate} from '../utils/rootNavigation';
 import * as Colors from '../assets/colors/palette.json';
 
 const bgs = [Colors.tertiary, '#5B99C2', '#445069', Colors.primary];
+
+const images: any = {
+  ['car-wheel']: require('../assets/images/car-wheel.png'),
+  ['folded-map']: require('../assets/images/folded-map.png'),
+  ['steering_wheel']: require('../assets/images/steering_wheel.png'),
+  ['final']: require('../assets/images/final.png'),
+};
 
 const InstructionsScreen = () => {
   const flatListRef = useRef<any>(null);
@@ -231,8 +239,13 @@ const InstructionsScreen = () => {
               asset={item.asset}
               action={item.action}
               handleProgress={handleProgress.bind(this, item.id)}
-              statusButton={statusButton!}
-            />
+              statusButton={statusButton!}>
+              <Image
+                source={images[item.asset]}
+                resizeMode={'contain'}
+                style={styles.image}
+              />
+            </Step>
           );
         }}
       />
@@ -253,6 +266,10 @@ const styles = StyleSheet.create({
     bottom: '6%',
     flexDirection: 'row',
     alignSelf: 'center',
+  },
+  image: {
+    width: PropDimensions.fullWidth / 1.4,
+    height: PropDimensions.fullWidth / 1.6,
   },
   indicatorItem: {
     margin: 10,

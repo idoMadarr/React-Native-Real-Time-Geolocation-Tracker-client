@@ -22,14 +22,14 @@
     },
     {
       "id": 3,
-      "asset": "car-wheel",
+      "asset": "steering_wheel",
       "title": "Background Location Service",
       "description": "Allows the app to track the user's location even when the app is not visible or running in the foreground. To enable background location on your device, go to App Settings > Permissions. Select Location and choose 'Allow all the time' or 'Always'.",
       "action": "Enable"
     },
     {
       "id": 4,
-      "asset": "car-wheel",
+      "asset": "final",
       "title": "That's it, you are ready to start",
       "description": "Enjoy...",
       "action": "Done"

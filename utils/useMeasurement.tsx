@@ -4,7 +4,10 @@ import Geolocation, {
   GeolocationError,
   GeolocationResponse,
 } from '@react-native-community/geolocation';
-import {Alert} from 'react-native';
+import RNRestart from 'react-native-restart';
+import {MessageModel} from '../models/MessageModel';
+import {useAppDispatch} from '../redux/hooks/hooks';
+import {setBottomSheet} from '../redux/slices/mainSlice';
 
 const options = {
   taskName: 'Background Task',
@@ -33,6 +36,8 @@ const sleep = (time: number) =>
   new Promise(resolve => setTimeout(() => resolve(), time));
 
 export const useMeasurement = () => {
+  const dispatch = useAppDispatch();
+
   let directionRef = useRef<GeolocationResponse[]>([]);
   let startTime = useRef<Date | null>();
 
@@ -51,7 +56,7 @@ export const useMeasurement = () => {
     if (directionRef.current) {
       //   drivingTime();
       await backgroundServer.stop();
-      Alert.alert('Title', JSON.stringify(directionRef.current));
+
       const driveRes = {
         direction: directionRef.current,
         startTime: startTime.current,
@@ -71,7 +76,6 @@ export const useMeasurement = () => {
     while (backgroundServer.isRunning()) {
       Geolocation.getCurrentPosition(
         (position: GeolocationResponse) => {
-          console.log(position);
           directionRef.current.push(position);
         },
         error => {
@@ -92,9 +96,21 @@ export const useMeasurement = () => {
     }
   };
 
-  const terminateMeasurement = (error: GeolocationError) => {
-    // if (error.)
-    Alert.alert('GPS Error', JSON.stringify(error));
+  const terminateMeasurement = async (error: GeolocationError) => {
+    // User change the permission while the app start to measure
+    // In this case - restart the app for sending the user the InstructionsScreen
+    if (error.code === error.PERMISSION_DENIED) {
+      await stopMeasurement();
+      return RNRestart.restart();
+    }
+
+    // Unavailable GPS coords (Ex. underground park) / Slow GPS retriving data
+    // In this case - keep tracking till the GPS will found a valid coords
+    if (
+      error.code === error.POSITION_UNAVAILABLE ||
+      error.code === error.TIMEOUT
+    )
+      return;
   };
 
   const fetchCurrentLocation = () => {
@@ -102,8 +118,15 @@ export const useMeasurement = () => {
       (position: GeolocationResponse) => {
         setCurrentLocation(position);
       },
+
       error => {
-        Alert.alert('GPS Error', JSON.stringify(error));
+        const errorMessage = new MessageModel(
+          `GPS Error: ${error.code}`,
+          error.message,
+          'restart',
+          () => RNRestart.restart(),
+        );
+        dispatch(setBottomSheet({type: 'message', content: errorMessage}));
       },
     );
   };

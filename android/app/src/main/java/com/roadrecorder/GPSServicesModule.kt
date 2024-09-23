@@ -9,10 +9,10 @@ import com.facebook.react.bridge.Promise
 import android.content.Intent
 import android.provider.Settings
 
-class LocationServicesModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class GPSServicesModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
     override fun getName(): String {
-        return "LocationServices"
+        return "GPSServices"
     }
 
     @ReactMethod

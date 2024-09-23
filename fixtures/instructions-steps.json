@@ -24,7 +24,7 @@
       "id": 3,
       "asset": "steering_wheel",
       "title": "Background Location Service",
-      "description": "Allows the app to track the user's location even when the app is not visible or running in the foreground. To enable background location on your device, go to App Settings > Permissions. Select Location and choose 'Allow all the time' or 'Always'.",
+      "description": "Allows the app to track the user's location even when the app is not visible or running in the foreground. To enable background location on your device, go to App Settings > Permissions. Select Location and choose 'Allow all the time' or 'Always'.\nAfter that, under 'Battery usage' make sure to select 'Unrestricted' option.",
       "action": "Enable"
     },
     {

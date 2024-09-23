@@ -16,12 +16,13 @@ import SummarizeModal from '../components/MainPartials/SummarizeModal';
 import {PropDimensions} from '../services/dimensions';
 import Colors from '../assets/colors/palette.json';
 import {saveRecord} from '../redux/actions/mainActions';
+import {MessageModel, MessageType} from '../models/MessageModel';
 
 // Screens
 import InitScreen from '../screens/InitScreen';
 import MainScreen from '../screens/MainScreen';
 import InstructionsScreen from '../screens/InstructionsScreen';
-import StopDriveModal from '../components/MainPartials/StopDriveModal';
+import MessageBottomSheet from '../components/MainPartials/MessageBottomSheet';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,7 +39,7 @@ const AppNavigation = () => {
 
   useEffect(() => {
     if (bottomSheet) {
-      if (bottomSheet.type === 'actions') {
+      if (bottomSheet.type === 'actions' || bottomSheet.type === 'message') {
         bottomSheetRef.current?.snapToIndex(0);
         return;
       }
@@ -48,8 +49,8 @@ const AppNavigation = () => {
     }
   }, [bottomSheet]);
 
-  const onSummarize = async (content: BottomSheetActions) => {
-    const measurement = await content.fetchMeasurement();
+  const onSummarize = async (actions: BottomSheetActions) => {
+    const measurement = await actions.fetchMeasurement();
     const deviceId = await getUniqueId();
     const manufacturer = await getManufacturer();
 
@@ -58,7 +59,11 @@ const AppNavigation = () => {
       deviceId: `${manufacturer}:${deviceId}`,
     };
 
-    await dispatch(saveRecord(body));
+    const invalidRecord = await dispatch(saveRecord(body));
+
+    if (invalidRecord) {
+      return handleInvalidRecord(invalidRecord.error, actions);
+    }
 
     stopDriveRef.value = 0;
     saveDriveRef.value = 1;
@@ -73,6 +78,19 @@ const AppNavigation = () => {
       saveDriveRef.value = 0;
       dispatch(setBottomSheet(null));
     }, 500);
+  };
+
+  const handleInvalidRecord = (error: string, actions: BottomSheetActions) => {
+    closeBottomSheet();
+    const errorMessage = new MessageModel(
+      'Tracker Failed:',
+      error,
+      'close',
+      onDone.bind(this, actions),
+    );
+    return setTimeout(() => {
+      dispatch(setBottomSheet({type: 'message', content: errorMessage}));
+    }, 600);
   };
 
   const closeBottomSheet = () => {
@@ -130,20 +148,35 @@ const AppNavigation = () => {
     modalComponent = (
       <View style={styles.bottomSheetHeight}>
         <Animated.View style={[stopDriveOpacityAnimation]}>
-          <StopDriveModal
-            onSummarize={onSummarize.bind(this, bottomSheet.content!)}
+          <MessageBottomSheet
+            title={'End Drive'}
+            content={` Are you sure you want to end the current drive? Your trip will stop being tracked, and all collected data will be saved. You can view the route and trip summary once the drive ends.`}
+            buttonTitle={'Summarize'}
+            onPress={onSummarize.bind(
+              this,
+              bottomSheet.content as BottomSheetActions,
+            )}
           />
         </Animated.View>
         <Animated.View style={[saveDriveOpacityAnimation]}>
           {currentRecord && (
             <SummarizeModal
-              onDone={onDone.bind(this, bottomSheet.content)}
+              onDone={onDone.bind(
+                this,
+                bottomSheet.content as BottomSheetActions,
+              )}
               buttonTitle={'Save & Done'}
               currentRecord={currentRecord}
             />
           )}
         </Animated.View>
       </View>
+    );
+  }
+
+  if (bottomSheet?.type === 'message') {
+    modalComponent = (
+      <MessageBottomSheet {...(bottomSheet.content as MessageType)} />
     );
   }
 

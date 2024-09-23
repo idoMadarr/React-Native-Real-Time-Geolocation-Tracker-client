@@ -14,8 +14,7 @@ axiosInstance.interceptors.response.use(
     return response.data;
   },
   async error => {
-    console.log(`Error: ${error}`);
-    return false;
+    return {error: error.response.data?.error || 'Unknown Error'};
   },
 );
 

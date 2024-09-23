@@ -1,5 +1,6 @@
 import {GeolocationResponse} from '@react-native-community/geolocation';
 import {createSlice} from '@reduxjs/toolkit';
+import {MessageType} from '../../models/MessageModel';
 
 export interface BottomSheetActions {
   fetchMeasurement(): {direction: GeolocationResponse[]; startTime: Date};
@@ -22,7 +23,7 @@ interface RootStateApp {
   currentRecord: RecordType | null;
   bottomSheet: {
     type: string;
-    content?: BottomSheetActions;
+    content?: BottomSheetActions | MessageType;
   } | null;
 }
 

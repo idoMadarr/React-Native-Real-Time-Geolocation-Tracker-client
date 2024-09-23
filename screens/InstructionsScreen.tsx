@@ -18,12 +18,13 @@ import {
   askForgroundLocation,
   checkBackgroundLocation,
   checkForgroundLocation,
+  checkUnrestrictedBattery,
 } from '../utils/permissions';
 import {navigate} from '../utils/rootNavigation';
 import * as Colors from '../assets/colors/palette.json';
 import {setAppReady} from '../redux/slices/mainSlice';
 
-const {LocationServices} = NativeModules;
+const {GPSServices} = NativeModules;
 
 const bgs = [Colors.tertiary, '#5B99C2', '#445069', Colors.primary];
 
@@ -51,6 +52,9 @@ const InstructionsScreen = () => {
   const [gpsLocationStatus, setLocationGpsStatus] = useState<boolean | null>(
     null,
   );
+  const [restrictBatteryStatus, setRestrictBatteryStatus] = useState<
+    boolean | null
+  >(null);
 
   useEffect(() => {
     initInstructions();
@@ -77,11 +81,13 @@ const InstructionsScreen = () => {
   const initInstructions = async () => {
     const forgroundStatus = await checkForgroundLocation();
     const backgroundStatus = await checkBackgroundLocation();
-    const gpsStatus = await LocationServices.isGPSEnabled();
+    const gpsStatus = await GPSServices.isGPSEnabled();
+    const batteryStatus = await checkUnrestrictedBattery();
 
     setForgroundLocationStatus(forgroundStatus);
     setBackgroundLocationStatus(backgroundStatus);
     setLocationGpsStatus(gpsStatus);
+    setRestrictBatteryStatus(batteryStatus);
   };
 
   const Indicator = ({scrollX}: {scrollX: Animated.Value}) => {
@@ -174,7 +180,7 @@ const InstructionsScreen = () => {
     switch (step) {
       case constants.GPS:
         if (!gpsLocationStatus) {
-          LocationServices.openGPSSettings();
+          GPSServices.openGPSSettings();
           break;
         }
         nextStep();
@@ -187,13 +193,19 @@ const InstructionsScreen = () => {
         };
         askForgroundLocation(cb);
         break;
-
       case constants.BACKGROUND_PERMISSION:
-        backgroundLocationStatus ? nextStep() : Linking.openSettings();
+        backgroundLocationStatus && restrictBatteryStatus
+          ? nextStep()
+          : Linking.openSettings();
         break;
 
       default:
-        if (forgroundLocationStatus && backgroundLocationStatus) {
+        if (
+          forgroundLocationStatus &&
+          backgroundLocationStatus &&
+          gpsLocationStatus &&
+          restrictBatteryStatus
+        ) {
           navigate('main');
         }
         break;
@@ -241,14 +253,17 @@ const InstructionsScreen = () => {
         )}
         renderItem={({item}) => {
           const statusButton =
-            item.id === constants.FORGROUND_PERMISSION
+            item.id === constants.GPS
+              ? gpsLocationStatus
+              : item.id === constants.FORGROUND_PERMISSION
               ? forgroundLocationStatus
               : item.id === constants.BACKGROUND_PERMISSION
-              ? backgroundLocationStatus
+              ? backgroundLocationStatus && restrictBatteryStatus
               : item.id === constants.DONE
-              ? forgroundLocationStatus && backgroundLocationStatus
-              : item.id === constants.GPS
-              ? gpsLocationStatus
+              ? forgroundLocationStatus &&
+                backgroundLocationStatus &&
+                gpsLocationStatus &&
+                restrictBatteryStatus
               : true;
 
           return (

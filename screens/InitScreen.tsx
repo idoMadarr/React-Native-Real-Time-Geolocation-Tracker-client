@@ -11,11 +11,12 @@ import {PropDimensions} from '../services/dimensions';
 import {
   checkBackgroundLocation,
   checkForgroundLocation,
+  checkUnrestrictedBattery,
 } from '../utils/permissions';
 import {fetchRecords} from '../redux/actions/mainActions';
 import {getManufacturer, getUniqueId} from 'react-native-device-info';
 
-const {LocationServices} = NativeModules;
+const {GPSServices} = NativeModules;
 
 const InitScreen = () => {
   const dispatch = useAppDispatch();
@@ -32,11 +33,12 @@ const InitScreen = () => {
 
     const forgroundStatus = await checkForgroundLocation();
     const backgroundStatus = await checkBackgroundLocation();
-    const isGPSEnabled = await LocationServices.isGPSEnabled();
+    const isGPSEnabled = await GPSServices.isGPSEnabled();
+    const batteryStatus = await checkUnrestrictedBattery();
 
     await dispatch(fetchRecords(`${manufacturer}:${deviceId}`));
     navigate(
-      forgroundStatus && backgroundStatus && isGPSEnabled
+      forgroundStatus && backgroundStatus && isGPSEnabled && batteryStatus
         ? 'main'
         : 'instructions',
     );

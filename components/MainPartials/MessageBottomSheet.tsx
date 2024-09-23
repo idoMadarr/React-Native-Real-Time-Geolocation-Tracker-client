@@ -4,37 +4,36 @@ import Colors from '../../assets/colors/palette.json';
 import TextElement from '../Resuable/TextElement';
 import ButtonElement from '../Resuable/ButtonElement';
 import {PropDimensions} from '../../services/dimensions';
+import {MessageType} from '../../models/MessageModel';
 
-interface StopDriveModalPropsType {
-  onSummarize(): void;
-}
-
-const StopDriveModal: React.FC<StopDriveModalPropsType> = ({onSummarize}) => {
+const MessageBottomSheet: React.FC<MessageType> = ({
+  title,
+  content,
+  buttonTitle,
+  onPress,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const onPress = () => {
-    setIsLoading(prevState => !prevState);
-    onSummarize();
+  const onSubmit = async () => {
+    setIsLoading(true);
+    await onPress();
+    // setIsLoading(false);
   };
 
   return (
     <View style={styles.modalContainer}>
       <TextElement fontSize={'lg'} fontWeight={'bold'}>
-        End Drive
+        {title}
       </TextElement>
-      <TextElement cStyle={{textAlign: 'justify'}}>
-        Are you sure you want to end the current drive? Your trip will stop
-        being tracked, and all collected data will be saved. You can view the
-        route and trip summary once the drive ends.
-      </TextElement>
+      <TextElement cStyle={{textAlign: 'justify'}}>{content}</TextElement>
       <ButtonElement
-        title={'Summarize'}
+        title={buttonTitle}
         fontSize={'m'}
         cStyle={styles.button}
         titleColor={Colors.white}
         isLoading={isLoading}
         backgroundColor={Colors.secondary}
-        onPress={onPress}
+        onPress={onSubmit}
       />
     </View>
   );
@@ -53,4 +52,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StopDriveModal;
+export default MessageBottomSheet;

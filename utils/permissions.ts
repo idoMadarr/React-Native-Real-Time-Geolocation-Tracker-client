@@ -1,5 +1,6 @@
-import {Platform} from 'react-native';
+import {NativeModules, Platform} from 'react-native';
 import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+const {BatteryOptimizationModule} = NativeModules;
 
 export const askForgroundLocation = async (cb?: () => void) => {
   const locationPermission =
@@ -42,4 +43,12 @@ export const checkBackgroundLocation = async () => {
     return false;
   }
   return true;
+};
+
+export const checkUnrestrictedBattery = async () => {
+  const status =
+    (await BatteryOptimizationModule.checkBatteryOptimization()) as string;
+
+  if (status === 'unrestricted') return true;
+  return false;
 };

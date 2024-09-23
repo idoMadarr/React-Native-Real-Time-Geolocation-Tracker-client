@@ -7,7 +7,9 @@ import {
 } from '../slices/mainSlice';
 
 export const saveRecord = (body: any) => async (dispatch: Dispatch) => {
-  const data = await axiosInstance.post('/summarize', body);
+  const data: any = await axiosInstance.post('/summarize', body);
+  if ('error' in data) return data;
+
   dispatch(setCurrentRecord(data));
 };
 

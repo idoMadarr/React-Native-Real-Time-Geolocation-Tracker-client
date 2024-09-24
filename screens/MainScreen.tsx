@@ -14,7 +14,6 @@ import TextElement from '../components/Resuable/TextElement';
 import ButtonElement from '../components/Resuable/ButtonElement';
 import * as Colors from '../assets/colors/palette.json';
 import Animated, {
-  interpolate,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
@@ -172,9 +171,7 @@ const MainScreen = () => {
       <Animated.View
         style={[styles.mapContainer, locationcTranslateXAnimation]}>
         <View style={styles.headerMapContainer}>
-          <TextElement
-            fontWeight={'bold'}
-            cStyle={{textAlign: 'center', color: Colors.secondary}}>
+          <TextElement fontWeight={'bold'} cStyle={styles.currentLocationText}>
             - Current Location -
           </TextElement>
         </View>
@@ -209,51 +206,31 @@ const MainScreen = () => {
         </View>
       </Animated.View>
 
-      {recordList.length >= 2 ? (
+      {recordList.length ? (
         <Animated.ScrollView
           style={[recordListOpacityAnimation]}
           horizontal={true}
           bounces={false}
+          scrollEnabled={recordList.length === 1 ? false : true}
           scrollEventThrottle={16}
-          snapToInterval={RECORD_ITEM_WIDTH}
+          snapToInterval={PropDimensions.fullWidth * 0.76}
           onScroll={onScroll}
           decelerationRate={'fast'}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{alignItems: 'center'}}>
           {displayRecordList.map((item, index) => {
-            const animatedScaleStyle = useAnimatedStyle(() => {
-              const scale = interpolate(
-                recordListX.value,
-                [
-                  (index - 2) * RECORD_ITEM_WIDTH,
-                  (index - 1) * RECORD_ITEM_WIDTH,
-                  index * RECORD_ITEM_WIDTH,
-                ],
-                [0.8, 1, 0.8],
-              );
-              return {
-                transform: [{scale}],
-              };
-            });
-
             if ('spacer' in item)
               return <View key={index} style={{width: SPACER}} />;
 
             return (
-              <Animated.View key={item._id} style={[animatedScaleStyle]}>
-                <RecordItem {...item} onRecord={onRecord.bind(this, item)} />
-              </Animated.View>
+              <RecordItem
+                key={item._id}
+                {...item}
+                onRecord={onRecord.bind(this, item)}
+              />
             );
           })}
         </Animated.ScrollView>
-      ) : recordList.length === 1 ? (
-        <Animated.View
-          style={[{alignItems: 'center'}, recordListOpacityAnimation]}>
-          <RecordItem
-            {...recordList[0]}
-            onRecord={onRecord.bind(this, recordList[0])}
-          />
-        </Animated.View>
       ) : null}
 
       <Animated.View style={[styles.startContainer, buttonTranslateXAnimation]}>
@@ -301,6 +278,10 @@ const styles = StyleSheet.create({
     height: '20%',
     width: '100%',
     justifyContent: 'center',
+  },
+  currentLocationText: {
+    textAlign: 'center',
+    color: Colors.secondary,
   },
   map: {
     height: '80%',

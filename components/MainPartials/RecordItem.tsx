@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
+    marginRight: PropDimensions.fullWidth * 0.06,
   },
   image: {
     height: '90%',

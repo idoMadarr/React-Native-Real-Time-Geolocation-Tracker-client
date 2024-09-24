@@ -50,12 +50,7 @@ export const mainSlice = createSlice({
       }
     },
     updateRecordList: (state, action) => {
-      // const recordListCopy: RecordType[] = JSON.parse(
-      //   JSON.stringify(state.recordList),
-      // );
-      // recordListCopy.push(action.payload);
-      // state.recordList = recordListCopy;
-      // state.recordList.push(action.payload);
+      state.recordList.unshift(action.payload);
     },
     setCurrentRecord: (state, action) => {
       state.currentRecord = action.payload;

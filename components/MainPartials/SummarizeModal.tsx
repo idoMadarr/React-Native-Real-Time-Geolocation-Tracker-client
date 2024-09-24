@@ -11,7 +11,7 @@ import MapView, {
 import ViewShot from 'react-native-view-shot';
 import {PropDimensions} from '../../services/dimensions';
 import TextElement from '../Resuable/TextElement';
-import {useAppDispatch, useAppSelector} from '../../redux/hooks/hooks';
+import {useAppDispatch} from '../../redux/hooks/hooks';
 import {updateScreenShot} from '../../redux/actions/mainActions';
 import {RecordType} from '../../redux/slices/mainSlice';
 

@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import ButtonElement from '../Resuable/ButtonElement';
 import Colors from '../../assets/colors/palette.json';
@@ -28,6 +28,8 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
 }) => {
   const dispatch = useAppDispatch();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const mapRef: any = useRef(MapView);
   const viewshotRef: any = useRef();
 
@@ -36,6 +38,7 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
       return onDone();
     }
 
+    setIsLoading(true);
     viewshotRef.current.capture().then(async (file: string) => {
       await dispatch(updateScreenShot(currentRecord._id, file));
       onDone();
@@ -123,6 +126,7 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
         titleColor={Colors.white}
         backgroundColor={Colors.primary}
         onPress={saveNDone}
+        isLoading={isLoading}
         cStyle={styles.button}
       />
     </View>

@@ -27,6 +27,8 @@ export const fetchRecords =
     const data = await axiosInstance.post('/device-records', {
       deviceId,
     });
+    // @ts-ignore:
+    if (data === false) return false;
 
     dispatch(setRecords(data));
   };

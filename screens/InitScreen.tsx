@@ -36,7 +36,9 @@ const InitScreen = () => {
     const isGPSEnabled = await GPSServices.isGPSEnabled();
     const batteryStatus = await checkUnrestrictedBattery();
 
-    await dispatch(fetchRecords(`${manufacturer}:${deviceId}`));
+    const records = await dispatch(fetchRecords(`${manufacturer}:${deviceId}`));
+    if (records === false) return;
+
     navigate(
       forgroundStatus && backgroundStatus && isGPSEnabled && batteryStatus
         ? 'main'

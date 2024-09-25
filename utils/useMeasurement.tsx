@@ -39,7 +39,6 @@ export const useMeasurement = () => {
   const dispatch = useAppDispatch();
 
   let directionRef = useRef<GeolocationResponse[]>([]);
-  let startTime = useRef<Date | null>();
 
   const [currentLocation, setCurrentLocation] =
     useState<GeolocationResponse | null>();
@@ -59,10 +58,8 @@ export const useMeasurement = () => {
 
       const driveRes = {
         direction: directionRef.current,
-        startTime: startTime.current,
       };
       directionRef.current = [];
-      startTime.current = null;
 
       return driveRes;
     }
@@ -70,7 +67,6 @@ export const useMeasurement = () => {
 
   const backgroundTask = async (taskDataArguments: any) => {
     const {delay} = taskDataArguments;
-    startTime.current = new Date();
 
     console.log('Background Server');
     while (backgroundServer.isRunning()) {
@@ -124,7 +120,7 @@ export const useMeasurement = () => {
           `GPS Error: ${error.code}`,
           error.message,
           'restart',
-          () => RNRestart.restart(),
+          RNRestart.restart,
         );
         dispatch(setBottomSheet({type: 'message', content: errorMessage}));
       },
@@ -137,7 +133,7 @@ export const useMeasurement = () => {
     stopMeasurement,
   };
 
-  //   const drivingTime = () => {
+  //   const formattedDriveTime = () => {
   //       const stopTime = new Date();
 
   //       // @ts-ignore:

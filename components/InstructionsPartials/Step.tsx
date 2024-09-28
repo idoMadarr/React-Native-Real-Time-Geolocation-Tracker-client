@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   descriptionSection: {
-    height: PropDimensions.fullHeight * 0.28,
+    height: PropDimensions.fullHeight * 0.3,
     paddingHorizontal: '8%',
     justifyContent: 'space-between',
   },

@@ -8,16 +8,16 @@ export const askForgroundLocation = async (cb?: () => void) => {
       ? PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION
       : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
 
-  const status = await request(locationPermission);
+  const status = await request(locationPermission, {
+    title: 'Enable GPS for Precise Tracking',
+    message:
+      'This app requires access to your location for using precise location in real-time.',
+    buttonPositive: 'OK',
+  });
   if (status === RESULTS.GRANTED || status === RESULTS.LIMITED) {
     cb!();
   }
 
-  if (status === RESULTS.DENIED || status === RESULTS.BLOCKED) {
-    console.log(
-      'show a modal that tell the user to allow the permission from the settings',
-    );
-  }
   return status;
 };
 

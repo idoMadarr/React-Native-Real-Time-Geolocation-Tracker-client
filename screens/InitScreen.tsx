@@ -22,9 +22,7 @@ const InitScreen = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    setTimeout(() => {
-      initApplication();
-    }, 3000);
+    initApplication();
   }, []);
 
   const initApplication = async () => {
@@ -101,6 +99,9 @@ const InitScreen = () => {
         source={require('../assets/animations/road_animation.json')}
         style={styles.roadLottie}
       />
+      <TextElement fontWeight={'bold'} cStyle={styles.demo}>
+        - Demo App -
+      </TextElement>
     </SafeAreaView>
   );
 };
@@ -134,6 +135,11 @@ const styles = StyleSheet.create({
   spinner: {
     position: 'absolute',
     bottom: '5%',
+  },
+  demo: {
+    position: 'absolute',
+    bottom: '4%',
+    color: Colors.white,
   },
 });
 

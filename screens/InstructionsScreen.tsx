@@ -23,6 +23,7 @@ import {
 import {navigate} from '../utils/rootNavigation';
 import * as Colors from '../assets/colors/palette.json';
 import {setAppReady} from '../redux/slices/mainSlice';
+import Config from 'react-native-config';
 
 const {GPSServices} = NativeModules;
 
@@ -223,6 +224,8 @@ const InstructionsScreen = () => {
     }
   };
 
+  const fetchPrivacyPolicy = () => Linking.openURL(Config.privacyPolicy!);
+
   return (
     <SafeAreaView style={styles.screen}>
       <StatusBarElement
@@ -268,12 +271,14 @@ const InstructionsScreen = () => {
 
           return (
             <Step
+              id={item.id}
               title={item.title}
               description={item.description}
               asset={item.asset}
               action={item.action}
               handleProgress={handleProgress.bind(this, item.id)}
-              statusButton={statusButton!}>
+              statusButton={statusButton!}
+              fetchPrivacyPolicy={fetchPrivacyPolicy}>
               <Image
                 source={images[item.asset]}
                 resizeMode={'contain'}

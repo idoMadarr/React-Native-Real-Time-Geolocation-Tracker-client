@@ -1,29 +1,47 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import {PropDimensions} from '../../services/dimensions';
 import TextElement from '../Resuable/TextElement';
 import ButtonElement from '../Resuable/ButtonElement';
 import * as Colors from '../../assets/colors/palette.json';
 
 interface StepPropsType {
+  id: number;
   title: string;
   description: string;
   asset: string;
   action: string;
   handleProgress(): void;
   statusButton: boolean;
+  fetchPrivacyPolicy(): void;
   children: JSX.Element;
 }
 
 const Step: React.FC<StepPropsType> = ({
+  id,
   title,
   description,
   asset,
   action,
   handleProgress,
   statusButton,
+  fetchPrivacyPolicy,
   children,
 }) => {
+  const privacyPolicyTitle =
+    id === 1 ? (
+      <TouchableOpacity onPress={fetchPrivacyPolicy} activeOpacity={0.6}>
+        {/* @ts-ignore: */}
+        <TextElement cStyle={styles.notice}>
+          * Click here to check our full{' '}
+          <TextElement fontWeight={'bold'} cStyle={styles.desc}>
+            Privacy Policy
+          </TextElement>{' '}
+          for more inforamtion.
+        </TextElement>
+      </TouchableOpacity>
+    ) : null;
+
   return (
     <View style={styles.screen}>
       <View style={styles.imageSection}>{children}</View>
@@ -36,6 +54,7 @@ const Step: React.FC<StepPropsType> = ({
             {title}
           </TextElement>
           <TextElement cStyle={styles.desc}>{description}</TextElement>
+          {privacyPolicyTitle}
         </View>
         <View style={{alignItems: 'flex-end'}}>
           <ButtonElement
@@ -76,6 +95,10 @@ const styles = StyleSheet.create({
   },
   desc: {
     color: Colors.white,
+  },
+  notice: {
+    marginTop: '3%',
+    color: Colors.placeholder,
   },
 });
 

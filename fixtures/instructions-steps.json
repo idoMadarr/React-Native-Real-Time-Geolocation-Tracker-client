@@ -9,7 +9,7 @@
     {
       "id": 1,
       "asset": "car-wheel",
-      "title": "Welcome to RoadRecorder",
+      "title": "DEMO APP\nWelcome to RoadRecorder",
       "description": "Track your journey in real-time with location monitoring via GPS device. To provide accurate real-time tracking, please enable GPS. This allows us to track your location and enhance your experience.",
       "action": "Enable"
     },

@@ -1,0 +1,38 @@
+{
+  "constants": {
+    "GPS": 1,
+    "FORGROUND_PERMISSION": 2,
+    "BACKGROUND_PERMISSION": 3,
+    "DONE": 4
+  },
+  "steps": [
+    {
+      "id": 1,
+      "asset": "car-wheel",
+      "title": "DEMO APP\nWelcome to RoadRecorder",
+      "description": "Track your journey in real-time with location monitoring via GPS device. To provide accurate real-time tracking, please enable GPS. This allows us to track your location and enhance your experience.",
+      "action": "Enable"
+    },
+    {
+      "id": 2,
+      "asset": "folded-map",
+      "title": "Forground Location Permission",
+      "description": "Driver locations are collected from the precise device’s native location service to pinpoint a driver’s latitude and longitude while the app is actively running and visible.",
+      "action": "Enable"
+    },
+    {
+      "id": 3,
+      "asset": "steering_wheel",
+      "title": "Background Location Service",
+      "description": "Getting user location is a crucial when the app is not visible. To enable 'background location' on your device, click 'Enable' and move to -> Permissions. Select Location and choose 'Allow all the time' or 'Always'.\nAfter that, under 'Battery usage' make sure to select 'Unrestricted' option.",
+      "action": "Enable"
+    },
+    {
+      "id": 4,
+      "asset": "final",
+      "title": "That's it! you are ready to start",
+      "description": "Now we can provide you accurate real-time tracking and enhance your experience.",
+      "action": "Done"
+    }
+  ]
+}

@@ -40,8 +40,6 @@ node_modules/
 .env
 npm-debug.log
 yarn-error.log
-android/gradle.properties
-android/app/src/main/AndroidManifest.xml
 # fastlane
 #
 # It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the

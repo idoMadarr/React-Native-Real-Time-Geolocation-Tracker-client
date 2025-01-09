@@ -16,18 +16,20 @@ const MessageBottomSheet: React.FC<MessageType> = ({
 
   const onSubmit = async () => {
     setIsLoading(true);
-    await onPress();
+    if (onPress) {
+      await onPress();
+    }
     // setIsLoading(false);
   };
 
   return (
     <View style={styles.modalContainer}>
       <TextElement fontSize={'lg'} fontWeight={'bold'}>
-        {title}
+        {title!}
       </TextElement>
-      <TextElement cStyle={{textAlign: 'justify'}}>{content}</TextElement>
+      <TextElement cStyle={{textAlign: 'justify'}}>{content!}</TextElement>
       <ButtonElement
-        title={buttonTitle}
+        title={buttonTitle!}
         fontSize={'m'}
         cStyle={styles.button}
         titleColor={Colors.white}

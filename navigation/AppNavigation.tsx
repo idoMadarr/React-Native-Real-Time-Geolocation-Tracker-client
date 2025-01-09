@@ -16,7 +16,7 @@ import SummarizeModal from '../components/MainPartials/SummarizeModal';
 import {PropDimensions} from '../services/dimensions';
 import Colors from '../assets/colors/palette.json';
 import {saveRecord} from '../redux/actions/mainActions';
-import {MessageModel, MessageType} from '../models/MessageModel';
+import {MessageBuilder, MessageType} from '../models/MessageModel';
 
 // Screens
 import InitScreen from '../screens/InitScreen';
@@ -82,12 +82,13 @@ const AppNavigation = () => {
 
   const handleInvalidRecord = (error: string, actions: BottomSheetActions) => {
     closeBottomSheet();
-    const errorMessage = new MessageModel(
-      'Tracker Failed:',
-      error,
-      'close',
-      onDone.bind(this, actions),
-    );
+
+    const errorMessage = new MessageBuilder(onDone.bind(this, actions))
+      .setMessage('Tracker Failed:')
+      .setContent(error)
+      .setButtonTitle('close')
+      .build();
+
     return setTimeout(() => {
       dispatch(setBottomSheet({type: 'message', content: errorMessage}));
     }, 600);

@@ -5,7 +5,7 @@ import Geolocation, {
   GeolocationResponse,
 } from '@react-native-community/geolocation';
 import RNRestart from 'react-native-restart';
-import {MessageModel} from '../models/MessageModel';
+import {MessageBuilder} from '../models/MessageModel';
 import {useAppDispatch} from '../redux/hooks/hooks';
 import {setBottomSheet} from '../redux/slices/mainSlice';
 
@@ -116,12 +116,12 @@ export const useMeasurement = () => {
       },
 
       error => {
-        const errorMessage = new MessageModel(
-          `GPS Error: ${error.code}`,
-          error.message,
-          'restart',
-          RNRestart.restart,
-        );
+        const errorMessage = new MessageBuilder(RNRestart.restart)
+          .setMessage(`GPS Error: ${error.code}`)
+          .setContent(error.message)
+          .setButtonTitle('restart')
+          .build();
+
         dispatch(setBottomSheet({type: 'message', content: errorMessage}));
       },
     );

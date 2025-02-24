@@ -1,25 +1,53 @@
-export class MessageModel {
-  title: string;
-  content: string;
-  buttonTitle: string;
-  onPress: () => void;
+export interface MessageType {
+  title: string | null;
+  content: string | null;
+  buttonTitle: string | null;
+  onPress?: () => void;
+}
 
-  constructor(
-    title: string,
-    content: string,
-    buttonTitle: string,
-    onPress: () => void,
-  ) {
-    this.title = title;
-    this.content = content;
-    this.buttonTitle = buttonTitle;
+export class MessageBuilder {
+  title: string | null;
+  content: string | null;
+  buttonTitle: string | null;
+  onPress?: () => void;
+
+  constructor(onPress?: () => void) {
+    this.title = null;
+    this.content = null;
+    this.buttonTitle = null;
     this.onPress = onPress;
+  }
+
+  setMessage(title: string) {
+    this.title = title;
+    return this;
+  }
+
+  setContent(content: string) {
+    this.content = content;
+    return this;
+  }
+
+  setButtonTitle(buttonTitle: string) {
+    this.buttonTitle = buttonTitle;
+    return this;
+  }
+
+  build() {
+    return new MessageModel(this);
   }
 }
 
-export interface MessageType {
-  title: string;
-  content: string;
-  buttonTitle: string;
-  onPress: () => void;
+class MessageModel {
+  title: string | null;
+  content: string | null;
+  buttonTitle: string | null;
+  onPress?: () => void;
+
+  constructor(builder: MessageType) {
+    this.title = builder.title;
+    this.content = builder.content;
+    this.buttonTitle = builder.buttonTitle;
+    this.onPress = builder.onPress;
+  }
 }

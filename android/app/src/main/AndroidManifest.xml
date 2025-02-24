@@ -15,9 +15,7 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:supportsRtl="true">
-      <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyC_U1KX78uPhzo0Os4nWV7balb38t0UVZ8"/>
-      <!-- MY PRIVATE KEY: -->
-      <!-- <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBisZujlarLqgWoZ2KtazoV79BDh-BiYvo"/> -->
+      <meta-data android:name="com.google.android.geo.API_KEY" android:value="${MAPS_API_KEY}" />
       <service android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask" android:foregroundServiceType="shortService"/>
       <activity
         android:name=".MainActivity"

@@ -2,7 +2,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import store from '../redux/store/store';
 import {setBottomSheet} from '../redux/slices/mainSlice';
-import {MessageModel} from '../models/MessageModel';
+import {MessageBuilder} from '../models/MessageModel';
 import RNRestart from 'react-native-restart';
 
 const axiosInstance = axios.create({
@@ -24,12 +24,11 @@ axiosInstance.interceptors.response.use(
       return {error: error.response.data?.error};
     }
 
-    const errorMessage = new MessageModel(
-      'Unknown Error:',
-      error.response.data?.error || 'Something went worng',
-      'restart',
-      RNRestart.restart,
-    );
+    const errorMessage = new MessageBuilder(RNRestart.restart)
+      .setMessage('Unknown Error:')
+      .setContent(error.response.data?.error || 'Something went worng')
+      .setButtonTitle('restart')
+      .build();
 
     store.dispatch(setBottomSheet({type: 'message', content: errorMessage}));
     return false;

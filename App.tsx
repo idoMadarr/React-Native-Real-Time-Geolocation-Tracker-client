@@ -1,7 +1,7 @@
 import React from 'react';
 import EStyleSheet from 'react-native-extended-stylesheet';
-import AppNavigation from './navigation/AppNavigation';
 import {Provider} from 'react-redux';
+import AppNavigation from './navigation/AppNavigation';
 import store from './redux/store/store';
 
 EStyleSheet.build({});

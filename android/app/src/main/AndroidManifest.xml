@@ -15,8 +15,7 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:supportsRtl="true">
-      <!-- ADD YOUR MAPS API KEY FROM Google CLOUD -->
-      <!-- <meta-data android:name="com.google.android.geo.API_KEY" android:value="YOUR_API_KEY"/> -->
+      <meta-data android:name="com.google.android.geo.API_KEY" android:value="${MAPS_API_KEY}" />
       <service android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask" android:foregroundServiceType="shortService"/>
       <activity
         android:name=".MainActivity"

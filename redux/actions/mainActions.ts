@@ -6,39 +6,51 @@ import {
   updateRecordList,
 } from '../slices/mainSlice';
 import Config from 'react-native-config';
-import {analyzeRoadRecord} from '../../utils/haversineFormula';
+import {
+  analyzeRoadRecord,
+  GeolocationResponse,
+} from '../../utils/haversineFormula';
 import {getFromStorage, saveToStorage} from '../../utils/asyncstorage';
 import uuid from 'react-native-uuid';
+import {getManufacturer, getUniqueId} from 'react-native-device-info';
 
-export const saveRecord = (body: any) => async (dispatch: Dispatch) => {
-  if (Config.OFFLINE_MODE === 'true') {
-    const {distance, averageSpeed, startTime, endTime, waypoints} =
-      analyzeRoadRecord(body);
+export interface GeoLocationBody {
+  deviceId: string;
+  record: GeolocationResponse[];
+}
 
-    const currentRecord = {
-      id: uuid.v4(),
-      distance,
-      averageSpeed,
-      startTime,
-      endTime,
-      waypoints,
-      image: null,
-    };
+export const saveRecord =
+  (body: GeoLocationBody) => async (dispatch: Dispatch) => {
+    if (Config.OFFLINE_MODE === 'true') {
+      const {distance, averageSpeed, startTime, endTime, waypoints} =
+        analyzeRoadRecord(body.record);
 
-    const userRecords = await getFromStorage('records');
-    if (userRecords) {
-      userRecords.push(currentRecord);
-      await saveToStorage('records', userRecords);
+      const currentRecord = {
+        _id: uuid.v4(),
+        distance,
+        averageSpeed,
+        startTime,
+        endTime,
+        waypoints,
+        image: null,
+      };
+
+      const userRecords = await getFromStorage('records');
+      if (userRecords) {
+        userRecords.push(currentRecord);
+        await saveToStorage('records', userRecords);
+      } else {
+        await saveToStorage('records', [currentRecord]);
+      }
+
+      dispatch(setCurrentRecord(currentRecord));
+    } else {
+      const data: any = await axiosInstance.post('/summarize', body);
+      if ('error' in data) return data;
+
+      dispatch(setCurrentRecord(data));
     }
-
-    dispatch(setCurrentRecord(currentRecord));
-  } else {
-    const data: any = await axiosInstance.post('/summarize', body);
-    if ('error' in data) return data;
-
-    dispatch(setCurrentRecord(data));
-  }
-};
+  };
 
 export const updateScreenShot =
   (recordId: string, viewShot: string) => async (dispatch: Dispatch) => {
@@ -46,13 +58,17 @@ export const updateScreenShot =
       const userRecords = await getFromStorage('records');
       if (userRecords) {
         const updatedRecords = userRecords.map((record: any) => {
-          if (record.id === recordId) {
+          if (record.id === recordId || record._id === recordId) {
             return {...record, image: viewShot};
           }
           return record;
         });
         await saveToStorage('records', updatedRecords);
         dispatch(updateRecordList(updatedRecords));
+
+        const deviceId = await getUniqueId();
+        const manufacturer = await getManufacturer();
+        dispatch(fetchRecords(`${manufacturer}:${deviceId}`));
       }
     } else {
       const updateRecord = await axiosInstance.post('/screen-shot', {

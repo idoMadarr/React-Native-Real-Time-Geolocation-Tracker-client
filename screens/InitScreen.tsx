@@ -15,6 +15,7 @@ import {
 } from '../utils/permissions';
 import {fetchRecords} from '../redux/actions/mainActions';
 import {getManufacturer, getUniqueId} from 'react-native-device-info';
+import Config from 'react-native-config';
 
 const {GPSServices} = NativeModules;
 
@@ -26,6 +27,8 @@ const InitScreen = () => {
   }, []);
 
   const initApplication = async () => {
+    console.log(Config.OFFLINE_MODE, 'OFFLINE_MODE');
+
     const deviceId = await getUniqueId();
     const manufacturer = await getManufacturer();
 

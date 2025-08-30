@@ -70,6 +70,8 @@ const MainScreen = () => {
     const modalActions = {
       fetchMeasurement: async () => {
         const result = await stopMeasurement();
+        console.log(result, 'result');
+
         return result;
       },
       onSave: async () => {
@@ -158,6 +160,7 @@ const MainScreen = () => {
       </Animated.View>
     );
   };
+  console.log(currentLocation, 'currentLocation');
 
   return (
     <SafeAreaView style={styles.screen}>

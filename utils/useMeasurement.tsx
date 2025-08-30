@@ -72,8 +72,6 @@ export const useMeasurement = () => {
     while (backgroundServer.isRunning()) {
       Geolocation.getCurrentPosition(
         (position: GeolocationResponse) => {
-          console.log(directionRef.current, 'positions');
-
           directionRef.current.push(position);
         },
         error => {
@@ -112,12 +110,8 @@ export const useMeasurement = () => {
   };
 
   const fetchCurrentLocation = () => {
-    console.log('asd');
-
     Geolocation.getCurrentPosition(
       (position: GeolocationResponse) => {
-        console.log(position, 'position');
-
         setCurrentLocation(position);
       },
 

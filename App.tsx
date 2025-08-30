@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import {Provider} from 'react-redux';
 import AppNavigation from './navigation/AppNavigation';

@@ -70,7 +70,6 @@ const MainScreen = () => {
     const modalActions = {
       fetchMeasurement: async () => {
         const result = await stopMeasurement();
-        console.log(result, 'result');
 
         return result;
       },
@@ -160,7 +159,6 @@ const MainScreen = () => {
       </Animated.View>
     );
   };
-  console.log(currentLocation, 'currentLocation');
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -227,7 +225,7 @@ const MainScreen = () => {
 
             return (
               <RecordItem
-                key={item._id}
+                key={index}
                 {...item}
                 onRecord={onRecord.bind(this, item)}
               />

@@ -1,6 +1,6 @@
-import {GeolocationResponse} from '@react-native-community/geolocation';
 import {createSlice} from '@reduxjs/toolkit';
 import {MessageType} from '../../models/MessageModel';
+import {GeolocationResponse} from '../../utils/haversineFormula';
 
 export interface BottomSheetActions {
   fetchMeasurement(): {direction: GeolocationResponse[]; startTime: Date};

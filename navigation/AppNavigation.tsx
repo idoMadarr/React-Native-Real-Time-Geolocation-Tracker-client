@@ -58,7 +58,6 @@ const AppNavigation = () => {
       record: measurement.direction,
       deviceId: `${manufacturer}:${deviceId}`,
     };
-    console.log(body, 'body');
 
     const invalidRecord = await dispatch(saveRecord(body));
 

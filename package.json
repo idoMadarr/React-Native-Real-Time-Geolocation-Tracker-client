@@ -17,6 +17,7 @@
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
     "@reduxjs/toolkit": "^2.2.7",
+    "@turf/turf": "^7.2.0",
     "@types/react-native-keep-awake": "^2.0.8",
     "@types/react-redux": "^7.1.33",
     "axios": "^1.7.7",

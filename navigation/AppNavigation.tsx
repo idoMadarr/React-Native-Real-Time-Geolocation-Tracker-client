@@ -23,6 +23,7 @@ import InitScreen from '../screens/InitScreen';
 import MainScreen from '../screens/MainScreen';
 import InstructionsScreen from '../screens/InstructionsScreen';
 import MessageBottomSheet from '../components/MainPartials/MessageBottomSheet';
+import GeofenceScreen from '../screens/GeofenceScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -186,6 +187,7 @@ const AppNavigation = () => {
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {!appReady && <Stack.Screen name={'splash'} component={InitScreen} />}
         <Stack.Screen name={'instructions'} component={InstructionsScreen} />
+        <Stack.Screen name={'geofence'} component={GeofenceScreen} />
         <Stack.Screen name={'main'} component={MainScreen} />
       </Stack.Navigator>
       <BottomSheet

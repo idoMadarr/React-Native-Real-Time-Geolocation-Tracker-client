@@ -29,6 +29,7 @@ import {
   setCurrentRecord,
 } from '../redux/slices/mainSlice';
 import RecordItem from '../components/MainPartials/RecordItem';
+import {navigate} from '../utils/rootNavigation';
 
 const RECORD_ITEM_WIDTH = PropDimensions.fullWidth * 0.7;
 const SPACER = (PropDimensions.fullWidth - RECORD_ITEM_WIDTH) / 2;
@@ -96,7 +97,7 @@ const MainScreen = () => {
     };
   });
 
-  const locationcTranslateXAnimation = useAnimatedStyle(() => {
+  const locationTranslateXAnimation = useAnimatedStyle(() => {
     return {
       transform: [{translateX: withTiming(locationcTranslateX.value)}],
     };
@@ -169,8 +170,7 @@ const MainScreen = () => {
       <CustomBackground />
       <DriveAnimation />
 
-      <Animated.View
-        style={[styles.mapContainer, locationcTranslateXAnimation]}>
+      <Animated.View style={[styles.mapContainer, locationTranslateXAnimation]}>
         <View style={styles.headerMapContainer}>
           <TextElement fontWeight={'bold'} cStyle={styles.currentLocationText}>
             - Current Location -
@@ -207,6 +207,20 @@ const MainScreen = () => {
         </View>
       </Animated.View>
 
+      <Animated.View
+        style={[styles.geofenceContainer, locationTranslateXAnimation]}>
+        <ButtonElement
+          backgroundColor={Colors.white}
+          onPress={() => navigate('geofence')}
+          title={'Set Geofence'}
+          titleColor={Colors.secondary}
+          cStyle={styles.geofenceButton}
+        />
+        <TextElement fontSize={'m'} fontWeight="bold">
+          Get notification when arrived at your destination
+        </TextElement>
+      </Animated.View>
+
       {recordList.length ? (
         <Animated.ScrollView
           style={[recordListOpacityAnimation]}
@@ -218,7 +232,7 @@ const MainScreen = () => {
           onScroll={onScroll}
           decelerationRate={'fast'}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{alignItems: 'center'}}>
+          contentContainerStyle={styles.scrollview}>
           {displayRecordList.map((item, index) => {
             if ('spacer' in item)
               return <View key={index} style={{width: SPACER}} />;
@@ -274,6 +288,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     justifyContent: 'space-between',
+    marginBottom: '2%',
   },
   headerMapContainer: {
     height: '20%',
@@ -289,6 +304,10 @@ const styles = StyleSheet.create({
     width: '100%',
     overflow: 'hidden',
     borderRadius: 16,
+  },
+  scrollview: {
+    height: Dimensions.get('window').height * 0.21,
+    alignItems: 'center',
   },
   startContainer: {
     alignSelf: 'center',
@@ -315,6 +334,17 @@ const styles = StyleSheet.create({
   },
   customBackground: {
     backgroundColor: Colors.white,
+  },
+  geofenceContainer: {
+    height: Dimensions.get('window').height * 0.1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  geofenceButton: {
+    borderRadius: 90,
+    elevation: 8,
+    width: PropDimensions.fullWidth * 0.4,
+    marginBottom: '2%',
   },
 });
 

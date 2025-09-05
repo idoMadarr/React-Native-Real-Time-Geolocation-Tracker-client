@@ -2,7 +2,6 @@ import React, {Fragment, useRef, useState} from 'react';
 import {
   StyleSheet,
   View,
-  Alert,
   SafeAreaView,
   TouchableOpacity,
   Platform,

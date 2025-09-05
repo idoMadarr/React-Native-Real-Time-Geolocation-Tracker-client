@@ -2,7 +2,6 @@ import React, {Fragment, useRef, useState} from 'react';
 import {
   StyleSheet,
   View,
-  Alert,
   SafeAreaView,
   TouchableOpacity,
   Platform,
@@ -30,6 +29,7 @@ import axios from 'axios';
 import {useAppDispatch} from '../redux/hooks/hooks';
 import {MessageBuilder} from '../models/MessageModel';
 import {setBottomSheet} from '../redux/slices/mainSlice';
+import {saveToStorage} from '../utils/asyncstorage';
 
 const {GeofenceModule} = NativeModules;
 

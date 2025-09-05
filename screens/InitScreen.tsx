@@ -23,7 +23,9 @@ const InitScreen = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    initApplication();
+    setTimeout(() => {
+      initApplication();
+    }, 1200);
   }, []);
 
   const initApplication = async () => {

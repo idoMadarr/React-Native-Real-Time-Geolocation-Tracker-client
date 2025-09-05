@@ -11,6 +11,7 @@ const MessageBottomSheet: React.FC<MessageType> = ({
   content,
   buttonTitle,
   onPress,
+  closeBottomSheet,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -18,8 +19,11 @@ const MessageBottomSheet: React.FC<MessageType> = ({
     setIsLoading(true);
     if (onPress) {
       await onPress();
+    } else {
+      closeBottomSheet!();
     }
-    // setIsLoading(false);
+
+    setIsLoading(false);
   };
 
   return (

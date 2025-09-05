@@ -178,7 +178,10 @@ const AppNavigation = () => {
 
   if (bottomSheet?.type === 'message') {
     modalComponent = (
-      <MessageBottomSheet {...(bottomSheet.content as MessageType)} />
+      <MessageBottomSheet
+        {...(bottomSheet.content as MessageType)}
+        closeBottomSheet={closeBottomSheet}
+      />
     );
   }
 

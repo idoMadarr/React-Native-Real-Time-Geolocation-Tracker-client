@@ -3,6 +3,7 @@ export interface MessageType {
   content: string | null;
   buttonTitle: string | null;
   onPress?: () => void;
+  closeBottomSheet?: () => void;
 }
 
 export class MessageBuilder {

@@ -10,6 +10,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
+import com.google.android.gms.location.LocationServices
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
@@ -23,8 +24,22 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         val geofenceIds = geofencingEvent.triggeringGeofences?.map { it.requestId }
 
         val message = when (geofenceTransition) {
-            Geofence.GEOFENCE_TRANSITION_ENTER -> "Entered geofence: ${geofenceIds?.joinToString()}"
-            Geofence.GEOFENCE_TRANSITION_EXIT -> "Exited geofence: ${geofenceIds?.joinToString()}"
+            Geofence.GEOFENCE_TRANSITION_ENTER -> {
+                // ✅ Remove the geofence once entered
+                geofenceIds?.let { ids ->
+                    val geofencingClient = LocationServices.getGeofencingClient(context)
+                    geofencingClient.removeGeofences(ids)
+                        .addOnSuccessListener {
+                            println("🗑️ Removed geofences: $ids")
+                        }
+                        .addOnFailureListener {
+                            println("❌ Failed to remove geofences: ${it.message}")
+                        }
+                }
+                "Entered geofence: ${geofenceIds?.joinToString()}"
+            }
+//            We can add more geofence transitions here like on EXIT / DWELL
+//            Geofence.GEOFENCE_TRANSITION_EXIT -> "Exited geofence: ${geofenceIds?.joinToString()}"
             else -> null
         }
 

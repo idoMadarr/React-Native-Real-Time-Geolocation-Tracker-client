@@ -95,9 +95,6 @@ const InputElement: React.FC<InputElementType> = ({
           cStyle,
         ]}
       />
-      <TextElement fontSize={'s'} cStyle={styles.error}>
-        {error || ''}
-      </TextElement>
     </View>
   );
 };
@@ -117,13 +114,9 @@ const styles = EStyleSheet.create({
     fontSize: '1.2rem',
     color: Colors.primary,
   },
-  error: {
-    marginVertical: 6,
-    color: Colors.warning,
-  },
   holderContainer: {
     position: 'absolute',
-    top: '20%',
+    top: '34%',
     left: '4%',
     justifyContent: 'center',
     alignItems: 'center',

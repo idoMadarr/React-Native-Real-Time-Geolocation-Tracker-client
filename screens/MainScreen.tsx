@@ -214,10 +214,12 @@ const MainScreen = () => {
           onPress={() => navigate('geofence')}
           title={'Set Geofence'}
           titleColor={Colors.secondary}
+          fontSize={'s'}
+          fontWeight={'bold'}
           cStyle={styles.geofenceButton}
         />
-        <TextElement fontSize={'m'} fontWeight="bold">
-          Get notification when arrived at your destination
+        <TextElement fontSize={'m'} cStyle={{color: Colors.white}}>
+          * Get notification by location *
         </TextElement>
       </Animated.View>
 

@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
 import com.google.android.gms.location.LocationServices
+import com.reactnativecommunity.asyncstorage.ReactDatabaseSupplier
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
@@ -25,6 +26,9 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
         val message = when (geofenceTransition) {
             Geofence.GEOFENCE_TRANSITION_ENTER -> {
+                // Remove AsyncStorage key saved from JS once entered
+                removeAsyncStorageKey(context, "geofence")
+
                 // ✅ Remove the geofence once entered
                 geofenceIds?.let { ids ->
                     val geofencingClient = LocationServices.getGeofencingClient(context)
@@ -64,5 +68,19 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             .build()
 
         notificationManager.notify(System.currentTimeMillis().toInt(), notification)
+    }
+
+    private fun removeAsyncStorageKey(context: Context, key: String) {
+        try {
+            val db = ReactDatabaseSupplier.getInstance(context).get()
+            db.delete(
+                "catalystLocalStorage", // AsyncStorage storage
+                "key = ?",               // WHERE clause
+                arrayOf(key)             // key to delete
+            )
+            println("🗑️ Removed AsyncStorage key: $key")
+        } catch (e: Exception) {
+            println("❌ Failed to remove AsyncStorage key: ${e.message}")
+        }
     }
 }

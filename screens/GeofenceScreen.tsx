@@ -26,9 +26,10 @@ import InputElement from '../components/Resuable/InputElement';
 import Config from 'react-native-config';
 import {ISRAEL_POLYGON_GEOJSON, RNM_ISRAEL_POLYGON} from '../utils/polygon';
 import axios from 'axios';
-import {useAppDispatch} from '../redux/hooks/hooks';
+import {useAppDispatch, useAppSelector} from '../redux/hooks/hooks';
 import {MessageBuilder} from '../models/MessageModel';
-import {setBottomSheet} from '../redux/slices/mainSlice';
+import {setBottomSheet, setGeofence} from '../redux/slices/mainSlice';
+import {removeFromStorage, saveToStorage} from '../utils/asyncstorage';
 
 const {GeofenceModule} = NativeModules;
 
@@ -46,7 +47,7 @@ const DestinationScreen = () => {
   const {currentLocation} = useMeasurement();
 
   const [address, setAddress] = useState<string>('');
-  const [geofence, setGeofence] = useState<any>(null);
+  const geofence = useAppSelector(state => state.mainSlice.geofence);
 
   const inputRef = useRef(null);
   const mapRef = useRef(null);
@@ -112,10 +113,12 @@ const DestinationScreen = () => {
         `https://geocode.maps.co/search?q=${encodedAddress}&api_key=${API_KEY}`,
       );
       if (res.data[0].lat) {
-        setGeofence({
-          latitude: Number(res.data[0].lat),
-          longitude: Number(res.data[0].lon),
-        });
+        dispatch(
+          setGeofence({
+            latitude: Number(res.data[0].lat),
+            longitude: Number(res.data[0].lon),
+          }),
+        );
         // @ts-ignore:
         mapRef.current?.animateToRegion(
           {
@@ -162,6 +165,8 @@ const DestinationScreen = () => {
       dispatch(setBottomSheet({type: 'message', content: failedMessage}));
     }
 
+    saveToStorage('geofence', geofence);
+
     const successMessage = new MessageBuilder()
       .setMessage(`Geofence Set`)
       .setContent("You'll receive a local notification when you reach the area")
@@ -173,7 +178,8 @@ const DestinationScreen = () => {
 
   const onClear = async () => {
     await GeofenceModule.removeGeofence('geofence_id');
-    setGeofence(null);
+    await removeFromStorage('geofence');
+    dispatch(setGeofence(null));
 
     const clearMessage = new MessageBuilder()
       .setMessage(`Geofence Cleared`)
@@ -196,7 +202,7 @@ const DestinationScreen = () => {
 
   const tapOnMap = (event: MapPressEvent) => {
     const {latitude, longitude} = event.nativeEvent.coordinate;
-    setGeofence({latitude: latitude, longitude: longitude});
+    dispatch(setGeofence({latitude: latitude, longitude: longitude}));
   };
 
   const iosTAG = (

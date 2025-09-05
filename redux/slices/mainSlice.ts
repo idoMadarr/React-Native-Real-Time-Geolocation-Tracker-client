@@ -17,10 +17,16 @@ export interface RecordType {
   image?: string | null;
 }
 
+export interface GeofenceType {
+  latitude: number;
+  longitude: number;
+}
+
 interface RootStateApp {
   appReady: boolean;
   recordList: RecordType[];
   currentRecord: RecordType | null;
+  geofence: GeofenceType | null;
   bottomSheet: {
     type: string;
     content?: BottomSheetActions | MessageType;
@@ -31,6 +37,7 @@ const initialState: RootStateApp = {
   appReady: false,
   recordList: [],
   currentRecord: null,
+  geofence: null,
   bottomSheet: null,
 };
 
@@ -55,6 +62,9 @@ export const mainSlice = createSlice({
     setCurrentRecord: (state, action) => {
       state.currentRecord = action.payload;
     },
+    setGeofence: (state, action) => {
+      state.geofence = action.payload;
+    },
   },
 });
 
@@ -63,6 +73,7 @@ export const {
   setBottomSheet,
   setRecords,
   updateRecordList,
+  setGeofence,
   setCurrentRecord,
 } = mainSlice.actions;
 

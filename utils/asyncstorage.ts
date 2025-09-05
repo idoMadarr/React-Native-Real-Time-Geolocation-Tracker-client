@@ -10,6 +10,6 @@ export const getFromStorage = async (name: string) => {
   if (data) return JSON.parse(data);
 };
 
-export const clearStorage = async () => {
-  await AsyncStorage.clear();
+export const removeFromStorage = async (key: string) => {
+  await AsyncStorage.removeItem(key);
 };

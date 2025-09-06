@@ -13,7 +13,7 @@ import {PropDimensions} from '../../services/dimensions';
 import TextElement from '../Resuable/TextElement';
 import {useAppDispatch} from '../../redux/hooks/hooks';
 import {updateScreenShot} from '../../redux/actions/mainActions';
-import {RecordType} from '../../redux/slices/mainSlice';
+import {RecordType, setGeofence} from '../../redux/slices/mainSlice';
 
 interface SummarizeModalPropsType {
   onDone(): void;
@@ -41,6 +41,7 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
     setIsLoading(true);
     viewshotRef.current.capture().then(async (file: string) => {
       await dispatch(updateScreenShot(currentRecord._id, file));
+      await dispatch(setGeofence(null));
       onDone();
     });
   };

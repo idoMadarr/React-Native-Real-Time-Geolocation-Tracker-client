@@ -302,13 +302,13 @@ const styles = StyleSheet.create({
   },
   indicatorContainer: {
     position: 'absolute',
-    bottom: '4%',
+    bottom: '6%',
     flexDirection: 'row',
     alignSelf: 'center',
   },
   image: {
-    width: PropDimensions.fullWidth / 1.4,
-    height: PropDimensions.fullWidth / 1.6,
+    width: PropDimensions.fullWidth / 1.8,
+    height: PropDimensions.fullWidth / 2,
   },
   indicatorItem: {
     margin: 10,

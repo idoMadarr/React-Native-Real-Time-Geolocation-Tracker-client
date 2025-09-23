@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     position: 'absolute',
-    bottom: '4%',
+    bottom: '6%',
     width: PropDimensions.standardWidth,
     flexDirection: 'row',
     justifyContent: 'space-between',

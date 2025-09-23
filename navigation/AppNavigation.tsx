@@ -45,7 +45,7 @@ const AppNavigation = () => {
         return;
       }
       if (bottomSheet.type === 'details') {
-        extendModal('85%');
+        extendModal('90%');
       }
     }
   }, [bottomSheet]);
@@ -68,7 +68,7 @@ const AppNavigation = () => {
 
     stopDriveRef.value = 0;
     saveDriveRef.value = 1;
-    extendModal('85%');
+    extendModal('90%');
   };
 
   const onDone = async (actions?: BottomSheetActions) => {
@@ -132,7 +132,7 @@ const AppNavigation = () => {
     };
   });
 
-  const snapPoints = useMemo(() => ['22%', '40%', '60%', '80%', '100%'], []);
+  const snapPoints = useMemo(() => ['26%', '44%', '64%', '84%', '100%'], []);
 
   let modalComponent: React.JSX.Element = <View />;
 

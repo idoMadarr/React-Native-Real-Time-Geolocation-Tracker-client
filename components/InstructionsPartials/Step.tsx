@@ -77,11 +77,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imageSection: {
-    height: PropDimensions.fullHeight * 0.6,
+    height: PropDimensions.fullHeight * 0.55,
     justifyContent: 'center',
   },
   descriptionSection: {
-    height: PropDimensions.fullHeight * 0.3,
+    height: PropDimensions.fullHeight * 0.32,
     paddingHorizontal: '8%',
     justifyContent: 'space-between',
   },

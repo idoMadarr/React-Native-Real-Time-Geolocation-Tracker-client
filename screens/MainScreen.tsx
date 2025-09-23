@@ -1,11 +1,6 @@
 import React, {useRef, useEffect} from 'react';
-import {
-  View,
-  StyleSheet,
-  SafeAreaView,
-  ActivityIndicator,
-  Dimensions,
-} from 'react-native';
+import {View, StyleSheet, ActivityIndicator, Dimensions} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {PropDimensions} from '../services/dimensions';
 import StatusBarElement from '../components/Resuable/StatusBarElement';

@@ -143,8 +143,8 @@ const styles = StyleSheet.create({
   },
   demo: {
     position: 'absolute',
-    bottom: '4%',
-    color: Colors.white,
+    top: '10%',
+    color: Colors.black,
   },
 });
 

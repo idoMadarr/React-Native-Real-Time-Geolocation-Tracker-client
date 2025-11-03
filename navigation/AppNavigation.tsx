@@ -1,10 +1,10 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {getUniqueId, getManufacturer} from 'react-native-device-info';
 import {navigationRef} from '../utils/rootNavigation';
-import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
+import {Modalize} from 'react-native-modalize';
 import {useAppDispatch, useAppSelector} from '../redux/hooks/hooks';
 import {BottomSheetActions, setBottomSheet} from '../redux/slices/mainSlice';
 import Animated, {
@@ -14,7 +14,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import SummarizeModal from '../components/MainPartials/SummarizeModal';
 import {PropDimensions} from '../services/dimensions';
-import Colors from '../assets/colors/palette.json';
 import {saveRecord} from '../redux/actions/mainActions';
 import {MessageBuilder, MessageType} from '../models/MessageModel';
 
@@ -34,19 +33,17 @@ const AppNavigation = () => {
   const bottomSheet = useAppSelector(state => state.mainSlice.bottomSheet);
   const currentRecord = useAppSelector(state => state.mainSlice.currentRecord);
 
-  const bottomSheetRef = useRef<BottomSheet>(null);
+  const bottomSheetRef = useRef<any>(null);
   const stopDriveRef = useSharedValue(1);
   const saveDriveRef = useSharedValue(0);
 
+  const [modalHeight, setModalHeight] = useState(1);
+
   useEffect(() => {
     if (bottomSheet) {
-      if (bottomSheet.type === 'actions' || bottomSheet.type === 'message') {
-        bottomSheetRef.current?.snapToIndex(0);
-        return;
-      }
-      if (bottomSheet.type === 'details') {
-        extendModal('90%');
-      }
+      if (bottomSheet.type === 'actions' || bottomSheet.type === 'message')
+        return extendModal(0.25);
+      if (bottomSheet.type === 'details') extendModal(0.9);
     }
   }, [bottomSheet]);
 
@@ -68,7 +65,7 @@ const AppNavigation = () => {
 
     stopDriveRef.value = 0;
     saveDriveRef.value = 1;
-    extendModal('90%');
+    extendModal(0.9);
   };
 
   const onDone = async (actions?: BottomSheetActions) => {
@@ -99,24 +96,12 @@ const AppNavigation = () => {
     bottomSheetRef.current?.close();
   };
 
-  const extendModal = (percentage: string) => {
-    bottomSheetRef.current?.snapToPosition(percentage);
+  const extendModal = (percentage: number) => {
+    setModalHeight(percentage);
+    setTimeout(() => {
+      bottomSheetRef.current?.open();
+    }, 500);
   };
-
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        pressBehavior={'none'}
-        onPress={() => {
-          // saveDriveRef.value = 0;
-          dispatch(setBottomSheet(null));
-        }}
-        {...props}
-        disappearsOnIndex={-1}
-      />
-    ),
-    [],
-  );
 
   const stopDriveOpacityAnimation = useAnimatedStyle(() => {
     return {
@@ -131,8 +116,6 @@ const AppNavigation = () => {
       display: saveDriveRef.value === 0 ? 'none' : 'flex',
     };
   });
-
-  const snapPoints = useMemo(() => ['26%', '44%', '64%', '84%', '100%'], []);
 
   let modalComponent: React.JSX.Element = <View />;
 
@@ -193,19 +176,15 @@ const AppNavigation = () => {
         <Stack.Screen name={'geofence'} component={GeofenceScreen} />
         <Stack.Screen name={'main'} component={MainScreen} />
       </Stack.Navigator>
-      <BottomSheet
+      <Modalize
         ref={bottomSheetRef}
-        index={-1}
-        snapPoints={snapPoints}
-        enableHandlePanningGesture={false}
-        enableContentPanningGesture={false}
-        enablePanDownToClose={true}
-        animationConfigs={{duration: 600}}
-        handleComponent={null}
-        handleIndicatorStyle={{backgroundColor: Colors.secondary}}
-        backdropComponent={renderBackdrop}>
+        snapPoint={PropDimensions.fullHeight * modalHeight}
+        useNativeDriver={true}
+        openAnimationConfig={{timing: {duration: 600}}}
+        closeAnimationConfig={{timing: {duration: 350}}}
+        panGestureEnabled={false}>
         {modalComponent}
-      </BottomSheet>
+      </Modalize>
     </NavigationContainer>
   );
 };
@@ -213,10 +192,6 @@ const AppNavigation = () => {
 const styles = StyleSheet.create({
   bottomSheetHeight: {
     height: PropDimensions.fullHeight * 0.7,
-  },
-  content: {
-    position: 'absolute',
-    top: 0,
   },
 });
 

@@ -31,7 +31,7 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const mapRef: any = useRef(MapView);
-  const viewshotRef: any = useRef();
+  const viewshotRef = useRef<any>(null);
 
   const saveNDone = async () => {
     if (buttonTitle === 'Close') {
@@ -39,11 +39,16 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
     }
 
     setIsLoading(true);
-    viewshotRef.current.capture().then(async (file: string) => {
-      await dispatch(updateScreenShot(currentRecord._id, file));
-      await dispatch(setGeofence(null));
-      onDone();
-    });
+    viewshotRef.current
+      .capture()
+      .then(async (file: string) => {
+        await dispatch(updateScreenShot(currentRecord._id, file));
+        await dispatch(setGeofence(null));
+        onDone();
+      })
+      .catch((error: any) => {
+        onDone();
+      });
   };
 
   const recordStartTime = new Date(currentRecord.startTime).toLocaleString(
@@ -137,6 +142,7 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
 const styles = StyleSheet.create({
   container: {
     height: PropDimensions.fullHeight * 0.85,
+    width: PropDimensions.fullWidth,
     justifyContent: 'space-between',
     borderRadius: 16,
     overflow: 'hidden',

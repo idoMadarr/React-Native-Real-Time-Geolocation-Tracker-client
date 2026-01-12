@@ -25,6 +25,7 @@ import {
 } from '../redux/slices/mainSlice';
 import RecordItem from '../components/MainPartials/RecordItem';
 import {navigate} from '../utils/rootNavigation';
+import {recordMockList} from '../fixtures/trip-mock.json';
 
 const RECORD_ITEM_WIDTH = PropDimensions.fullWidth * 0.7;
 const SPACER = (PropDimensions.fullWidth - RECORD_ITEM_WIDTH) / 2;
@@ -35,7 +36,8 @@ const MainScreen = () => {
   const dispatch = useAppDispatch();
 
   const mapRef: any = useRef(MapView);
-  const recordList = useAppSelector(state => state.mainSlice.recordList);
+  // const recordList = useAppSelector(state => state.mainSlice.recordList);
+  const recordList = recordMockList;
   const displayRecordList = [{spacer: true}, ...recordList, {spacer: true}];
 
   // Animated BG Transition:
@@ -50,7 +52,7 @@ const MainScreen = () => {
 
   useEffect(() => {
     dispatch(setAppReady());
-  }, []);
+  }, [dispatch]);
 
   const onStart = () => {
     buttonTranslateX.value = PropDimensions.fullWidth;
@@ -83,7 +85,8 @@ const MainScreen = () => {
 
   const onRecord = async (content: RecordType) => {
     await dispatch(setCurrentRecord(content));
-    await dispatch(setBottomSheet({type: 'details'}));
+    navigate('summary');
+    // await dispatch(setBottomSheet({type: 'details'}));
   };
 
   const buttonTranslateXAnimation = useAnimatedStyle(() => {

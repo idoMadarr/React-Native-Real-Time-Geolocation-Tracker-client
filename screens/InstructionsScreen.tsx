@@ -60,7 +60,7 @@ const InstructionsScreen = () => {
   useEffect(() => {
     initInstructions();
     dispatch(setAppReady());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {

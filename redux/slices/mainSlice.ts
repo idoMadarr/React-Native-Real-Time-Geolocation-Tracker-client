@@ -15,6 +15,27 @@ export interface RecordType {
   endTime: Date;
   waypoints: {longitude: number; latitude: number}[];
   image?: string | null;
+  // Extended metrics
+  maxSpeed?: number;
+  minSpeed?: number;
+  duration?: number;
+  durationFormatted?: string;
+  elevationGain?: number;
+  elevationLoss?: number;
+  maxElevation?: number;
+  minElevation?: number;
+  pickupAddress: string;
+  destinationAddress: string;
+  stops?: number;
+  averageHeading?: number;
+  numberOfWaypoints?: number;
+  segments?: Array<{
+    distance: number;
+    speed: number;
+    time: number;
+    startIndex: number;
+    endIndex: number;
+  }>;
 }
 
 export interface GeofenceType {

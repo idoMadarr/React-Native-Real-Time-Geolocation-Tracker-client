@@ -9,19 +9,17 @@ interface StepPropsType {
   id: number;
   title: string;
   description: string;
-  asset: string;
   action: string;
   handleProgress(): void;
   statusButton: boolean;
   fetchPrivacyPolicy(): void;
-  children: JSX.Element;
+  children: React.JSX.Element;
 }
 
 const Step: React.FC<StepPropsType> = ({
   id,
   title,
   description,
-  asset,
   action,
   handleProgress,
   statusButton,

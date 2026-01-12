@@ -1,12 +1,11 @@
 import React, {RefObject} from 'react';
-import {View, TextInput, Dimensions} from 'react-native';
+import {View, TextInput, Dimensions, TouchableOpacity} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
 import EStyleSheet from 'react-native-extended-stylesheet';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import {PropDimensions} from '../../services/dimensions';
 import Colors from '../../assets/colors/palette.json';
 

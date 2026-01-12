@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Dimensions, StyleSheet, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {getUniqueId, getManufacturer} from 'react-native-device-info';
@@ -16,6 +16,7 @@ import SummarizeModal from '../components/MainPartials/SummarizeModal';
 import {PropDimensions} from '../services/dimensions';
 import {saveRecord} from '../redux/actions/mainActions';
 import {MessageBuilder, MessageType} from '../models/MessageModel';
+import Colors from '../assets/colors/palette.json';
 
 // Screens
 import InitScreen from '../screens/InitScreen';
@@ -23,6 +24,8 @@ import MainScreen from '../screens/MainScreen';
 import InstructionsScreen from '../screens/InstructionsScreen';
 import MessageBottomSheet from '../components/MainPartials/MessageBottomSheet';
 import GeofenceScreen from '../screens/GeofenceScreen';
+import SummaryScreen from '../screens/SummaryScreen';
+import StatisticBottomSheet from '../components/SummaryPartials/StatisticBottomSheet';
 
 const Stack = createNativeStackNavigator();
 
@@ -40,15 +43,16 @@ const AppNavigation = () => {
   const [modalHeight, setModalHeight] = useState(1);
 
   useEffect(() => {
-    if (bottomSheet) {
-      if (bottomSheet.type === 'actions' || bottomSheet.type === 'message')
-        return extendModal(0.25);
-      if (bottomSheet.type === 'details') extendModal(0.9);
-    }
+    autoGraphZoom();
   }, [bottomSheet]);
 
   const onSummarize = async (actions: BottomSheetActions) => {
     const measurement = await actions.fetchMeasurement();
+
+    if (!measurement.direction.length) {
+      return handleInvalidRecord('No data recorded', actions);
+    }
+
     const deviceId = await getUniqueId();
     const manufacturer = await getManufacturer();
 
@@ -58,7 +62,6 @@ const AppNavigation = () => {
     };
 
     const invalidRecord = await dispatch(saveRecord(body));
-
     if (invalidRecord) {
       return handleInvalidRecord(invalidRecord.error, actions);
     }
@@ -101,6 +104,15 @@ const AppNavigation = () => {
     setTimeout(() => {
       bottomSheetRef.current?.open();
     }, 500);
+  };
+
+  const autoGraphZoom = () => {
+    if (bottomSheet) {
+      if (bottomSheet.type === 'actions' || bottomSheet.type === 'message')
+        return extendModal(0.25);
+      if (bottomSheet.type === 'details') extendModal(0.9);
+      if (bottomSheet.type === 'summary') extendModal(0.45);
+    }
   };
 
   const stopDriveOpacityAnimation = useAnimatedStyle(() => {
@@ -168,6 +180,10 @@ const AppNavigation = () => {
     );
   }
 
+  if (bottomSheet?.type === 'summary') {
+    modalComponent = <StatisticBottomSheet />;
+  }
+
   return (
     <NavigationContainer ref={navigationRef}>
       <Stack.Navigator screenOptions={{headerShown: false}}>
@@ -175,6 +191,7 @@ const AppNavigation = () => {
         <Stack.Screen name={'instructions'} component={InstructionsScreen} />
         <Stack.Screen name={'geofence'} component={GeofenceScreen} />
         <Stack.Screen name={'main'} component={MainScreen} />
+        <Stack.Screen name={'summary'} component={SummaryScreen} />
       </Stack.Navigator>
       <Modalize
         ref={bottomSheetRef}
@@ -182,7 +199,17 @@ const AppNavigation = () => {
         useNativeDriver={true}
         openAnimationConfig={{timing: {duration: 600}}}
         closeAnimationConfig={{timing: {duration: 350}}}
-        panGestureEnabled={false}>
+        panGestureEnabled={bottomSheet?.type === 'summary' ? true : false}
+        handleStyle={{
+          backgroundColor: Colors.dark,
+          transform: [{translateY: Dimensions.get('window').height * 0.03}],
+        }}
+        overlayStyle={{
+          backgroundColor:
+            bottomSheet?.type === 'summary'
+              ? 'rgba(0, 0, 0, 0)'
+              : 'rgba(0, 0, 0, 0.5)',
+        }}>
         {modalComponent}
       </Modalize>
     </NavigationContainer>

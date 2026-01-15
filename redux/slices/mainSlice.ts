@@ -2,7 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 import {MessageType} from '../../models/MessageModel';
 import {GeolocationResponse} from '../../utils/haversineFormula';
 
-export interface BottomSheetActions {
+export interface BottomSheetActionsPropsType {
   fetchMeasurement(): {direction: GeolocationResponse[]; startTime: Date};
   onSave(): void;
 }
@@ -50,7 +50,7 @@ interface RootStateApp {
   geofence: GeofenceType | null;
   bottomSheet: {
     type: string;
-    content?: BottomSheetActions | MessageType;
+    content?: BottomSheetActionsPropsType | MessageType;
   } | null;
 }
 

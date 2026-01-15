@@ -26,6 +26,7 @@ import {
 import RecordItem from '../components/MainPartials/RecordItem';
 import {navigate} from '../utils/rootNavigation';
 import {recordMockList} from '../fixtures/trip-mock.json';
+import {BottomSheetTypes} from '../components/BottomSheet/BottomSheetTypes';
 
 const RECORD_ITEM_WIDTH = PropDimensions.fullWidth * 0.7;
 const SPACER = (PropDimensions.fullWidth - RECORD_ITEM_WIDTH) / 2;
@@ -80,7 +81,9 @@ const MainScreen = () => {
       },
     };
 
-    dispatch(setBottomSheet({type: 'actions', content: modalActions}));
+    dispatch(
+      setBottomSheet({type: BottomSheetTypes.ACTIONS, content: modalActions}),
+    );
   };
 
   const onRecord = async (content: RecordType) => {

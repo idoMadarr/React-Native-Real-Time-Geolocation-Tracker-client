@@ -1,10 +1,16 @@
 import {Dimensions, StyleSheet, View} from 'react-native';
-import React from 'react';
+import React, {Fragment} from 'react';
 import TextElement from '../Resuable/TextElement';
 import {LineChart} from 'react-native-gifted-charts';
 import {useAppSelector} from '../../redux/hooks/hooks';
 import {PropDimensions} from '../../services/dimensions';
 import Colors from '../../assets/colors/palette.json';
+import {
+  DestinationIcon,
+  SpeedIcon,
+  StopIcon,
+  TimeIcon,
+} from '../../assets/svgs';
 
 const StatisticBottomSheet = () => {
   const currentRecord = useAppSelector(state => state.mainSlice.currentRecord!);
@@ -57,63 +63,71 @@ const StatisticBottomSheet = () => {
   const maxValue = Math.ceil(maxSpeed / 10) * 10;
   const noOfSections = maxValue / 10;
 
+  const chartWidth = Dimensions.get('window').width * 0.75;
+  const spacing = chartWidth / (lineData?.length || 10);
+
   return (
-    <View style={styles.mainContainer}>
+    <Fragment>
       <View style={styles.datesContainer}>
         <View style={styles.dateSection}>
           <TextElement fontSize={'s'}>Start Time</TextElement>
           <TextElement fontWeight={'bold'}>{recordStartTime}</TextElement>
         </View>
-        <View style={styles.seperator} />
         <View style={styles.dateSection}>
           <TextElement fontSize={'s'}>End Time:</TextElement>
           <TextElement fontWeight={'bold'}>{recordEndTime}</TextElement>
         </View>
       </View>
+      <View style={styles.seperator} />
       <View style={styles.details}>
         <View style={styles.section}>
-          <TextElement fontSize={'s'}>Distance</TextElement>
-          <TextElement fontWeight={'bold'}>{`${currentRecord.distance.toFixed(
-            2,
-          )} km`}</TextElement>
+          <DestinationIcon style={styles.icon} width={28} height={28} />
+          <TextElement fontWeight={'bold'} fontSize={'s'}>{`(km)`}</TextElement>
+          <TextElement>{`${currentRecord.distance.toFixed(2)}`}</TextElement>
         </View>
         <View style={styles.section}>
-          <TextElement fontSize={'s'}>A. Speed</TextElement>
+          <SpeedIcon
+            fill={Colors.speed}
+            style={styles.icon}
+            width={28}
+            height={28}
+          />
           <TextElement
-            fontWeight={'bold'}>{`${currentRecord.averageSpeed.toFixed(
-            0,
-          )} km/h`}</TextElement>
+            fontWeight={'bold'}
+            fontSize={'s'}>{`(km/h)`}</TextElement>
+          <TextElement>{`Average ${currentRecord.averageSpeed.toFixed(
+            2,
+          )}`}</TextElement>
+          <TextElement>{`Max ${currentRecord.maxSpeed?.toFixed(
+            2,
+          )}`}</TextElement>
+          <TextElement>{`Min ${currentRecord.minSpeed?.toFixed(
+            2,
+          )}`}</TextElement>
         </View>
         <View style={styles.section}>
-          <TextElement fontSize={'s'}>Max Speed</TextElement>
-          <TextElement>{currentRecord.maxSpeed}</TextElement>
+          <TimeIcon style={styles.icon} width={28} height={28} />
+          <TextElement fontWeight={'bold'}>
+            {currentRecord.durationFormatted}
+          </TextElement>
         </View>
         <View style={styles.section}>
-          <TextElement fontSize={'s'}>Min Speed</TextElement>
-          <TextElement>{currentRecord.minSpeed}</TextElement>
-        </View>
-        <View style={styles.section}>
-          <TextElement fontSize={'s'}>Time</TextElement>
-          <TextElement>{currentRecord.durationFormatted}</TextElement>
-        </View>
-        <View style={styles.section}>
-          <TextElement fontSize={'s'}>Stops</TextElement>
-          <TextElement>{currentRecord.stops}</TextElement>
+          <StopIcon style={styles.icon} width={28} height={28} />
+          <TextElement fontWeight={'bold'}>{`(Stops)`}</TextElement>
+          <TextElement>{`${currentRecord.stops} `}</TextElement>
         </View>
       </View>
 
       <View style={styles.segmentContainer}>
-        <TextElement cStyle={styles.textAlign} fontWeight={'bold'}>
-          {'Segments'}
-        </TextElement>
         <LineChart
           data={lineData}
           curved
-          showVerticalLines
-          spacing={40}
+          showVerticalLines={false}
+          spacing={spacing}
           isAnimated={true}
-          thickness={3}
-          yAxisLabelSuffix={'km/h'}
+          thickness={2}
+          // yAxisLabelSuffix={'km/h'}
+          disableScroll={true}
           maxValue={maxValue}
           noOfSections={noOfSections}
           color={Colors.secondary}
@@ -122,15 +136,15 @@ const StatisticBottomSheet = () => {
           width={PropDimensions.standardWidth}
           height={Dimensions.get('window').height * 0.2}
         />
+        <TextElement cStyle={styles.unit} fontWeight={'bold'} fontSize={'s'}>
+          {'* Unit: km/h'}
+        </TextElement>
       </View>
-    </View>
+    </Fragment>
   );
 };
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    marginTop: '8%',
-  },
   datesContainer: {
     marginBottom: '4%',
   },
@@ -142,49 +156,41 @@ const styles = StyleSheet.create({
     height: 1,
     width: PropDimensions.standardWidth,
     alignSelf: 'center',
-    backgroundColor: '#eee',
+    backgroundColor: '#b9b9b9',
     marginVertical: '2%',
   },
   details: {
-    // flex: 1,
     width: PropDimensions.standardWidth,
     alignSelf: 'center',
     justifyContent: 'center',
-    flexWrap: 'wrap',
     flexDirection: 'row',
-    // paddingVertical: '4%',
-    // justifyContent: 'space-between',
+    marginVertical: '3%',
   },
   section: {
-    margin: '2%',
-    width: Dimensions.get('window').width * 0.2,
-    height: Dimensions.get('window').width * 0.2,
-    borderRadius: 50,
-    justifyContent: 'center',
+    margin: 1,
+    width: Dimensions.get('window').width * 0.25,
     alignItems: 'center',
-    borderWidth: 1,
-    // elevation: 2,
-    // overflow: 'hidden',
-    borderColor: '#ccc',
-    backgroundColor: 'white',
-    // justifyContent: 'space-between',
-    // alignItems: 'center',
-    // flexDirection: 'row',
   },
   segmentContainer: {
     width: PropDimensions.standardWidth,
     alignSelf: 'center',
+    overflow: 'hidden',
   },
   yAxisTextStyle: {
     color: Colors.secondary,
-    fontWeight: 'bold',
-    width: 75,
   },
   xAxisLabelTextStyle: {
-    fontWeight: 'bold',
+    display: 'none',
   },
   textAlign: {
     textAlign: 'center',
+  },
+  unit: {
+    textAlign: 'center',
+    color: Colors.placeholder,
+  },
+  icon: {
+    marginBottom: '2%',
   },
 });
 

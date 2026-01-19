@@ -10,7 +10,6 @@ import MapView, {
 import {PropDimensions} from '../services/dimensions';
 import TextElement from '../components/Resuable/TextElement';
 import {useAppSelector} from '../redux/hooks/hooks';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import StatusBarElement from '../components/Resuable/StatusBarElement';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import StatisticBottomSheet from '../components/SummaryPartials/StatisticBottomSheet';
@@ -76,7 +75,6 @@ const SummaryScreen = () => {
       <StatusBarElement
         backgroundColor={Colors.white}
         barStyle={'dark-content'}
-        translucent
       />
       <View style={styles.mapContainer}>
         <Animated.View
@@ -90,7 +88,10 @@ const SummaryScreen = () => {
                 fontSize={'s'}>
                 Start point:
               </TextElement>
-              <TextElement numberOfLines={1} fontSize={'s'}>
+              <TextElement
+                cStyle={styles.destinationText}
+                numberOfLines={1}
+                fontSize={'s'}>
                 {currentRecord.pickupAddress}
               </TextElement>
             </View>
@@ -104,7 +105,10 @@ const SummaryScreen = () => {
                 fontSize={'s'}>
                 Destination:
               </TextElement>
-              <TextElement numberOfLines={1} fontSize={'s'}>
+              <TextElement
+                cStyle={styles.destinationText}
+                numberOfLines={1}
+                fontSize={'s'}>
                 {currentRecord.destinationAddress}
               </TextElement>
             </View>
@@ -173,7 +177,7 @@ const styles = StyleSheet.create({
     width: PropDimensions.standardWidth,
     height: Dimensions.get('window').height * 0.14,
     position: 'absolute',
-    top: '4%',
+    top: '2%',
     alignSelf: 'center',
     backgroundColor: Colors.white,
     zIndex: 10,
@@ -191,6 +195,9 @@ const styles = StyleSheet.create({
   },
   destinationTextContainer: {
     marginLeft: '6%',
+  },
+  destinationText: {
+    width: Dimensions.get('window').width * 0.58,
   },
 });
 

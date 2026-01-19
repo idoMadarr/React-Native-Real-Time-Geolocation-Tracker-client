@@ -14,38 +14,37 @@ import Animated, {
 import {MessageBuilder} from '../../models/MessageModel';
 import {getManufacturer, getUniqueId} from 'react-native-device-info';
 import {saveRecord} from '../../redux/actions/mainActions';
+import {useMeasurement} from '../../utils/useMeasurement';
+import {goBack} from '../../utils/rootNavigation';
 
-interface BottomSheetActionsPropsType2 {
-  closeBottomSheet(): void;
-  extendBottomsheet(): void;
-}
-
-const BottomSheetActions: React.FC<BottomSheetActionsPropsType2> = ({
+const BottomSheetActions: React.FC<BottomSheetActionsPropsType> = ({
   closeBottomSheet,
   extendBottomsheet,
 }) => {
+  const {stopLocationUpdatesNative} = useMeasurement();
+
   const dispatch = useAppDispatch();
 
   const currentRecord = useAppSelector(state => state.mainSlice.currentRecord);
-  const bottomSheet = useAppSelector(state => state.mainSlice.bottomSheet);
 
   const stopDriveRef = useSharedValue(1);
   const saveDriveRef = useSharedValue(0);
 
-  const onDone = async (actions?: BottomSheetActionsPropsType) => {
+  const onDone = async () => {
     closeBottomSheet();
     setTimeout(() => {
-      if (actions && 'onSave' in actions) actions.onSave();
+      goBack();
       stopDriveRef.value = 1;
       saveDriveRef.value = 0;
       dispatch(setBottomSheet(null));
     }, 500);
   };
 
-  const onSummarize = async (actions: BottomSheetActionsPropsType) => {
-    const measurement = await actions.fetchMeasurement();
-    if (!measurement.direction.length) {
-      return handleInvalidRecord('No data recorded', actions);
+  const onSummarize = async () => {
+    const measurement = stopLocationUpdatesNative();
+
+    if (!measurement?.direction.length) {
+      return handleInvalidRecord('No data recorded');
     }
     const deviceId = await getUniqueId();
     const manufacturer = await getManufacturer();
@@ -57,7 +56,9 @@ const BottomSheetActions: React.FC<BottomSheetActionsPropsType2> = ({
 
     const invalidRecord = await dispatch(saveRecord(body));
     if (invalidRecord) {
-      return handleInvalidRecord(invalidRecord.error, actions);
+      return handleInvalidRecord(
+        invalidRecord.error || 'Unknown error occurred',
+      );
     }
 
     stopDriveRef.value = 0;
@@ -65,13 +66,10 @@ const BottomSheetActions: React.FC<BottomSheetActionsPropsType2> = ({
     extendBottomsheet();
   };
 
-  const handleInvalidRecord = (
-    error: string,
-    actions: BottomSheetActionsPropsType,
-  ) => {
+  const handleInvalidRecord = (error: string) => {
     closeBottomSheet();
 
-    const errorMessage = new MessageBuilder(onDone.bind(this, actions))
+    const errorMessage = new MessageBuilder(onDone)
       .setMessage('Tracker Failed:')
       .setContent(error)
       .setButtonTitle('close')
@@ -105,19 +103,13 @@ const BottomSheetActions: React.FC<BottomSheetActionsPropsType2> = ({
             'Are you sure you want to end the current drive? Your trip will stop being tracked, and all collected data will be saved. You can view the route and trip summary once the drive ends.'
           }
           buttonTitle={'Summarize'}
-          onPress={onSummarize.bind(
-            this,
-            bottomSheet?.content as BottomSheetActionsPropsType,
-          )}
+          onPress={onSummarize}
         />
       </Animated.View>
       <Animated.View style={[saveDriveOpacityAnimation]}>
         {currentRecord && (
           <SummarizeModal
-            onDone={onDone.bind(
-              this,
-              bottomSheet?.content as BottomSheetActionsPropsType,
-            )}
+            onDone={onDone}
             buttonTitle={'Save & Done'}
             currentRecord={currentRecord}
           />

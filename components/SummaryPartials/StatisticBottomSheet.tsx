@@ -70,20 +70,26 @@ const StatisticBottomSheet = () => {
     <Fragment>
       <View style={styles.datesContainer}>
         <View style={styles.dateSection}>
-          <TextElement fontSize={'s'}>Start Time</TextElement>
-          <TextElement fontWeight={'bold'}>{recordStartTime}</TextElement>
+          <TextElement fontWeight="bold" fontSize={'s'}>
+            Start Time
+          </TextElement>
+          <TextElement>{recordStartTime}</TextElement>
         </View>
         <View style={styles.dateSection}>
-          <TextElement fontSize={'s'}>End Time:</TextElement>
-          <TextElement fontWeight={'bold'}>{recordEndTime}</TextElement>
+          <TextElement fontWeight="bold" fontSize={'s'}>
+            End Time:
+          </TextElement>
+          <TextElement>{recordEndTime}</TextElement>
         </View>
       </View>
       <View style={styles.seperator} />
       <View style={styles.details}>
         <View style={styles.section}>
           <DestinationIcon style={styles.icon} width={28} height={28} />
-          <TextElement fontWeight={'bold'} fontSize={'s'}>{`(km)`}</TextElement>
-          <TextElement>{`${currentRecord.distance.toFixed(2)}`}</TextElement>
+          <TextElement fontWeight={'bold'}>{`(km)`}</TextElement>
+          <TextElement fontSize={'s'}>{`${currentRecord.distance.toFixed(
+            2,
+          )}`}</TextElement>
         </View>
         <View style={styles.section}>
           <SpeedIcon
@@ -95,26 +101,26 @@ const StatisticBottomSheet = () => {
           <TextElement
             fontWeight={'bold'}
             fontSize={'s'}>{`(km/h)`}</TextElement>
-          <TextElement>{`Average ${currentRecord.averageSpeed.toFixed(
+          <TextElement fontSize={'s'}>{`A. ${currentRecord.averageSpeed.toFixed(
             2,
           )}`}</TextElement>
-          <TextElement>{`Max ${currentRecord.maxSpeed?.toFixed(
+          <TextElement fontSize={'s'}>{`Max ${currentRecord.maxSpeed?.toFixed(
             2,
           )}`}</TextElement>
-          <TextElement>{`Min ${currentRecord.minSpeed?.toFixed(
+          <TextElement fontSize={'s'}>{`Min ${currentRecord.minSpeed?.toFixed(
             2,
           )}`}</TextElement>
         </View>
         <View style={styles.section}>
           <TimeIcon style={styles.icon} width={28} height={28} />
-          <TextElement fontWeight={'bold'}>
+          <TextElement fontSize={'s'} fontWeight={'bold'}>
             {currentRecord.durationFormatted}
           </TextElement>
         </View>
         <View style={styles.section}>
           <StopIcon style={styles.icon} width={28} height={28} />
           <TextElement fontWeight={'bold'}>{`(Stops)`}</TextElement>
-          <TextElement>{`${currentRecord.stops} `}</TextElement>
+          <TextElement fontSize={'s'}>{`${currentRecord.stops} `}</TextElement>
         </View>
       </View>
 
@@ -136,7 +142,7 @@ const StatisticBottomSheet = () => {
           width={PropDimensions.standardWidth}
           height={Dimensions.get('window').height * 0.2}
         />
-        <TextElement cStyle={styles.unit} fontWeight={'bold'} fontSize={'s'}>
+        <TextElement cStyle={styles.unit} fontSize={'s'}>
           {'* Unit: km/h'}
         </TextElement>
       </View>
@@ -149,8 +155,11 @@ const styles = StyleSheet.create({
     marginBottom: '4%',
   },
   dateSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     width: PropDimensions.standardWidth,
     alignSelf: 'center',
+    marginTop: '2%',
   },
   seperator: {
     height: 1,
@@ -168,13 +177,14 @@ const styles = StyleSheet.create({
   },
   section: {
     margin: 1,
-    width: Dimensions.get('window').width * 0.25,
+    width: Dimensions.get('window').width * 0.22,
     alignItems: 'center',
   },
   segmentContainer: {
     width: PropDimensions.standardWidth,
     alignSelf: 'center',
     overflow: 'hidden',
+    marginRight: '5%',
   },
   yAxisTextStyle: {
     color: Colors.secondary,
@@ -186,7 +196,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   unit: {
-    textAlign: 'center',
     color: Colors.placeholder,
   },
   icon: {

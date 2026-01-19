@@ -14,7 +14,6 @@ import {getFromStorage, saveToStorage} from '../../utils/asyncstorage';
 import uuid from 'react-native-uuid';
 import {getManufacturer, getUniqueId} from 'react-native-device-info';
 import axios from 'axios';
-import {Alert} from 'react-native';
 
 const API_KEY = Config.geocode_maps_key;
 export interface GeoLocationBody {
@@ -43,28 +42,32 @@ export const saveRecord =
         averageHeading,
         numberOfWaypoints,
         segments,
+        totalTurns,
+        sharpTurns,
+        uTurns,
+        maxTurnAngle,
+        turnEvents,
       } = analyzeRoadRecord(body.record);
 
       // Getting the address from the first the last waypoint.
-      let pickupAddress: any = 'Not Found';
-      let destinationAddress: any = 'Not Found';
+      let pickupAddress: any = 'Address Not Found';
+      let destinationAddress: any = 'Address Not Found';
       try {
         const pickupResAddress = await axios(
-          `https://geocode.maps.co/reverse?lat=${waypoints[0].latitude}&lon=${waypoints[0].longitude}&api_key=${API_KEY}`,
+          `https://geocode.maps.co/reverse?lat=${waypoints[0].latitude}&lon=${waypoints[0].longitude}&accept-language=en&api_key=${API_KEY}`,
         );
         const destinationResAddress = await axios(
           `https://geocode.maps.co/reverse?lat=${
             waypoints[waypoints.length - 1].latitude
           }&lon=${
             waypoints[waypoints.length - 1].longitude
-          }&api_key=${API_KEY}`,
+          }&accept-language=en&api_key=${API_KEY}`,
         );
 
         pickupAddress = pickupResAddress.data.display_name;
         destinationAddress = destinationResAddress.data.display_name;
-        Alert.alert('destinationResAddress', destinationAddress);
       } catch (error) {
-        console.log(error, 'error ');
+        console.log('Error: fetching addresses', error);
       }
 
       const currentRecord = {
@@ -89,6 +92,11 @@ export const saveRecord =
         segments,
         pickupAddress,
         destinationAddress,
+        totalTurns,
+        sharpTurns,
+        uTurns,
+        maxTurnAngle,
+        turnEvents,
       };
 
       const userRecords = await getFromStorage('records');
@@ -150,3 +158,14 @@ export const fetchRecords =
       dispatch(setRecords(data));
     }
   };
+
+export const tripAnalaytics = async (record: any) => {
+  try {
+    const response = await axios.post(`${Config.agent_url}/analyze_trip`, {
+      trip_data: record,
+    });
+    return response.data;
+  } catch (error) {
+    return {error: 'Failed to analyze trip'};
+  }
+};

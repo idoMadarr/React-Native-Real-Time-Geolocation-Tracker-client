@@ -8,17 +8,38 @@ export interface GeolocationResponse {
     longitude: number;
     latitude: number;
   };
-  extras: {
-    meanCn0: number;
-    maxCn0: number;
-    satellites: number;
-  };
+  mocked: boolean;
+  // extras?: {
+  //   meanCn0: number;
+  //   maxCn0: number;
+  //   satellites: number;
+  // };
 }
 
 export interface Waypoint {
   longitude: number;
   latitude: number;
 }
+
+type TurnSeverity = 'normal' | 'sharp' | 'u-turn';
+
+interface TurnEvent {
+  index: number;
+  angle: number;
+  severity: TurnSeverity;
+}
+
+const TURN_THRESHOLDS = {
+  MIN_TURN: 15, // Ignore noise
+  NORMAL: 30,
+  SHARP: 60,
+  U_TURN: 120,
+};
+
+const getHeadingDelta = (h1: number, h2: number) => {
+  const diff = Math.abs(h2 - h1);
+  return Math.min(diff, 360 - diff);
+};
 
 const haversineFormula = (
   lat1: number,
@@ -241,6 +262,53 @@ const calculateSegments = (coordinates: GeolocationResponse[]) => {
   return segments;
 };
 
+const calculateTurnMetrics = (coordinates: GeolocationResponse[]) => {
+  let totalTurns = 0;
+  let sharpTurns = 0;
+  let uTurns = 0;
+  let maxTurnAngle = 0;
+
+  const turnEvents: TurnEvent[] = [];
+
+  for (let i = 1; i < coordinates.length; i++) {
+    const prev = coordinates[i - 1].coords.heading;
+    const curr = coordinates[i].coords.heading;
+
+    if (prev < 0 || curr < 0) continue;
+
+    const angle = getHeadingDelta(prev, curr);
+
+    if (angle < TURN_THRESHOLDS.MIN_TURN) continue;
+
+    totalTurns++;
+    maxTurnAngle = Math.max(maxTurnAngle, angle);
+
+    let severity: TurnSeverity = 'normal';
+
+    if (angle >= TURN_THRESHOLDS.U_TURN) {
+      uTurns++;
+      severity = 'u-turn';
+    } else if (angle >= TURN_THRESHOLDS.SHARP) {
+      sharpTurns++;
+      severity = 'sharp';
+    }
+
+    turnEvents.push({
+      index: i,
+      angle,
+      severity,
+    });
+  }
+
+  return {
+    totalTurns,
+    sharpTurns,
+    uTurns,
+    maxTurnAngle,
+    turnEvents,
+  };
+};
+
 const buildDirectionWaypoints = (path: GeolocationResponse[]) => {
   const waypoints: Waypoint[] = path.map(point => {
     return {
@@ -268,8 +336,8 @@ export interface RoadRecordAnalysis {
   elevationLoss: number; // in meters
   maxElevation: number; // in meters
   minElevation: number; // in meters
-  pickupAddress: string;
-  destinationAddress: string;
+  pickupAddress?: string; // Adding by api call
+  destinationAddress?: string; // Adding by api call
   stops: number;
   averageHeading: number; // in degrees (0-360)
   numberOfWaypoints: number;
@@ -279,6 +347,15 @@ export interface RoadRecordAnalysis {
     time: number;
     startIndex: number;
     endIndex: number;
+  }>;
+  totalTurns: number;
+  sharpTurns: number;
+  uTurns: number;
+  maxTurnAngle: number;
+  turnEvents: Array<{
+    index: number;
+    angle: number;
+    severity: 'normal' | 'sharp' | 'u-turn';
   }>;
 }
 
@@ -301,6 +378,7 @@ export const analyzeRoadRecord = (
   const stops = calculateStops(record);
   const averageHeading = calculateAverageHeading(record);
   const segments = calculateSegments(record);
+  const turnMetrics = calculateTurnMetrics(record);
 
   return {
     // Original metrics
@@ -322,5 +400,10 @@ export const analyzeRoadRecord = (
     averageHeading,
     numberOfWaypoints: waypoints.length,
     segments,
+    totalTurns: turnMetrics.totalTurns,
+    sharpTurns: turnMetrics.sharpTurns,
+    uTurns: turnMetrics.uTurns,
+    maxTurnAngle: turnMetrics.maxTurnAngle,
+    turnEvents: turnMetrics.turnEvents,
   };
 };

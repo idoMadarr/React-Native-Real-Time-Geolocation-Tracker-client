@@ -1,18 +1,17 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {MessageType} from '../../models/MessageModel';
-import {GeolocationResponse} from '../../utils/haversineFormula';
 
 export interface BottomSheetActionsPropsType {
-  fetchMeasurement(): {direction: GeolocationResponse[]; startTime: Date};
-  onSave(): void;
+  closeBottomSheet(): void;
+  extendBottomsheet(): void;
 }
 
 export interface RecordType {
   _id: string;
   distance: number;
   averageSpeed: number;
-  startTime: Date;
-  endTime: Date;
+  startTime: Date | string;
+  endTime: Date | string;
   waypoints: {longitude: number; latitude: number}[];
   image?: string | null;
   // Extended metrics

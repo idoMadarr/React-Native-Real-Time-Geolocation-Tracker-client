@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, StyleSheet, View, TouchableOpacity} from 'react-native';
+import {Image, StyleSheet, View, Pressable} from 'react-native';
 import {RecordType} from '../../redux/slices/mainSlice';
 import TextElement from '../Resuable/TextElement';
 import {PropDimensions} from '../../services/dimensions';
@@ -13,6 +13,8 @@ const noGpsImage = require('../../assets/images/no_gps.png');
 
 const RecordItem: React.FC<RecordItemPropsType> = ({
   startTime,
+  pickupAddress,
+  destinationAddress,
   image,
   onRecord,
 }) => {
@@ -29,35 +31,63 @@ const RecordItem: React.FC<RecordItemPropsType> = ({
   const imageResize = image ? 'cover' : 'contain';
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
+    <Pressable
       onPress={onRecord}
-      style={styles.recordContainer}>
-      <View style={styles.textContainer}>
-        <TextElement fontSize={'lg'} cStyle={{color: Colors.dark}}>
-          {recordStartTime}
+      style={({pressed}) => {
+        return [styles.mainContainer, {opacity: pressed ? 0.7 : 1}];
+      }}>
+      <View style={styles.dateContainer}>
+        <TextElement fontWeight={'bold'} fontSize={'s'} numberOfLines={2}>
+          {`${recordStartTime}`}
         </TextElement>
       </View>
-      <Image source={imageSource} resizeMode={imageResize} style={imageStyle} />
-    </TouchableOpacity>
+      <View style={styles.recordContainer}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={imageSource}
+            resizeMode={imageResize}
+            style={imageStyle}
+          />
+        </View>
+        <View style={styles.textContainer}>
+          <TextElement fontSize={'s'} numberOfLines={2}>
+            {`From: ${pickupAddress}`}
+          </TextElement>
+          <TextElement fontSize={'s'} numberOfLines={2}>
+            {`To: ${destinationAddress}`}
+          </TextElement>
+        </View>
+      </View>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
-  recordContainer: {
-    elevation: 3,
-    borderRadius: 16,
+  mainContainer: {
+    elevation: 12,
+    borderRadius: 12,
     backgroundColor: Colors.white,
-    height: PropDimensions.fullHeight * 0.2,
-    width: PropDimensions.fullWidth * 0.7,
+    height: PropDimensions.fullHeight * 0.18,
+    width: PropDimensions.fullWidth * 0.85,
+    alignSelf: 'center',
     justifyContent: 'center',
+    paddingHorizontal: '3%',
+  },
+  dateContainer: {
+    marginBottom: '2%',
+    opacity: 0.5,
+  },
+  recordContainer: {
     alignItems: 'center',
-    overflow: 'hidden',
-    marginRight: PropDimensions.fullWidth * 0.06,
+    flexDirection: 'row',
+  },
+  imageContainer: {
+    height: PropDimensions.fullWidth * 0.24,
+    width: PropDimensions.fullWidth * 0.24,
   },
   image: {
-    height: '90%',
-    width: '90%',
+    height: '100%',
+    width: '100%',
     opacity: 0.4,
     borderRadius: 12,
   },
@@ -66,8 +96,9 @@ const styles = StyleSheet.create({
     opacity: 0.08,
   },
   textContainer: {
-    zIndex: 10,
-    position: 'absolute',
+    width: PropDimensions.fullWidth * 0.52,
+    paddingLeft: '4%',
+    opacity: 0.5,
   },
 });
 

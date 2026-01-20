@@ -31,7 +31,7 @@ const GenericHeader: React.FC<GenericHeaderPropsType> = ({
             {title}
           </TextElement>
         </View>
-        <TextElement fontSize={'m'} cStyle={styles.description}>
+        <TextElement fontSize={'s'} cStyle={styles.description}>
           {description}
         </TextElement>
       </View>
@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     color: Colors.dark,
   },
   description: {
+    width: PropDimensions.standardWidth * 0.9,
     opacity: 0.5,
   },
 });

@@ -43,7 +43,7 @@ const MainScreen = () => {
   };
 
   const onTrips = () => {
-    navigate('trips');
+    navigate('permissions');
   };
 
   return (

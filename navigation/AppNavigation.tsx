@@ -29,7 +29,21 @@ const AppNavigation = () => {
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           {!appReady && <Stack.Screen name={'splash'} component={InitScreen} />}
-          <Stack.Screen name={'permissions'} component={PermissionsScreen} />
+          <Stack.Screen
+            name={'permissions'}
+            component={PermissionsScreen}
+            options={{
+              headerShown: true,
+              header: () => (
+                <GenericHeader
+                  title={'Setting Permissions'}
+                  description={
+                    'We needs the following permissions to record your trips'
+                  }
+                />
+              ),
+            }}
+          />
           <Stack.Screen name={'instructions'} component={InstructionsScreen} />
           <Stack.Screen name={'main'} component={MainScreen} />
           <Stack.Screen

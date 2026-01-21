@@ -47,6 +47,14 @@ interface RootStateApp {
   recordList: RecordType[];
   currentRecord: RecordType | null;
   geofence: GeofenceType | null;
+  permissions: {
+    gps: boolean;
+    location: boolean;
+    backgroundLocation: boolean;
+    batteryOptimization: boolean;
+    notifications: boolean;
+    overlay: boolean;
+  };
   bottomSheet: {
     type: string;
     content?: BottomSheetActionsPropsType | MessageType;
@@ -58,6 +66,14 @@ const initialState: RootStateApp = {
   recordList: [],
   currentRecord: null,
   geofence: null,
+  permissions: {
+    gps: false,
+    location: false,
+    backgroundLocation: false,
+    batteryOptimization: false,
+    notifications: false,
+    overlay: false,
+  },
   bottomSheet: null,
 };
 
@@ -67,6 +83,14 @@ export const mainSlice = createSlice({
   reducers: {
     setAppReady: state => {
       state.appReady = true;
+    },
+    updatePermission: (state, action) => {
+      state.permissions[
+        action.payload.type as keyof RootStateApp['permissions']
+      ] = action.payload.value;
+    },
+    setPermissions: (state, action) => {
+      state.permissions = action.payload;
     },
     setBottomSheet: (state, action) => {
       state.bottomSheet = action.payload;
@@ -90,6 +114,8 @@ export const mainSlice = createSlice({
 
 export const {
   setAppReady,
+  updatePermission,
+  setPermissions,
   setBottomSheet,
   setRecords,
   updateRecordList,

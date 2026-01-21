@@ -16,6 +16,7 @@ import {
 import {fetchRecords} from '../redux/actions/mainActions';
 import {getManufacturer, getUniqueId} from 'react-native-device-info';
 import Config from 'react-native-config';
+import {setPermissions} from '../redux/slices/mainSlice';
 
 const {GPSServices} = NativeModules;
 
@@ -39,13 +40,24 @@ const InitScreen = () => {
     const isGPSEnabled = await GPSServices.isGPSEnabled();
     const batteryStatus = await checkUnrestrictedBattery();
 
+    dispatch(
+      setPermissions({
+        gps: isGPSEnabled,
+        location: forgroundStatus,
+        backgroundLocation: backgroundStatus,
+        batteryOptimization: batteryStatus,
+        notifications: false,
+        overlay: false,
+      }),
+    );
+
     const records = await dispatch(fetchRecords(`${manufacturer}:${deviceId}`));
     if (records === false) return;
 
     navigate(
       forgroundStatus && backgroundStatus && isGPSEnabled && batteryStatus
         ? 'main'
-        : 'instructions',
+        : 'permissions',
     );
   };
 

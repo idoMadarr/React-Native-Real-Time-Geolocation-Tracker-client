@@ -1,0 +1,34 @@
+{
+  "permissions": [
+    {
+      "type": "gps",
+      "title": "GPS",
+      "description": "Enable GPS so we can accurately record your trips and provide helpful driving insights. Your location is used only while tracking and never shared."
+    },
+    {
+      "type": "location",
+      "title": "Location Access",
+      "description": "In order to being able to record your trips, the app needs access to your location. Please choose \"While in use\" and leave the precision on \"hight\"."
+    },
+    {
+      "type": "background_location",
+      "title": "Background Location",
+      "description": "Background location access allows us to track your trips even if you lock your phone, switch apps, or setting the app in the background, So your trips continue recording seamlessly while you drive."
+    },
+    {
+      "type": "battery_optimization",
+      "title": "Battery Optimization",
+      "description": "To ensure continuous trip recording, please disable battery optimization for this app. This prevents the system from restricting background activities that are essential for accurate tracking."
+    },
+    {
+      "type": "notifications",
+      "title": "Push Notifications",
+      "description": "Notifications are used to inform you when you arrive at your destination, based on your selected geofencing address, allowing us to detect arrival and notify you about an active trip."
+    },
+    {
+      "type": "overlay",
+      "title": "Draw over other apps",
+      "description": "The overlay is used only during active trips to keep you aware about active trip while using the phone."
+    }
+  ]
+}

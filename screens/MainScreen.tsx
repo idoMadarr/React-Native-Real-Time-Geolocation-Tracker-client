@@ -18,7 +18,7 @@ import {useAppDispatch} from '../redux/hooks/hooks';
 import {setAppReady} from '../redux/slices/mainSlice';
 import {navigate} from '../utils/rootNavigation';
 import {setDelay} from '../utils/helpers';
-import {MapIcon} from '../assets/svgs';
+import {MapIcon, SettingsIcon} from '../assets/svgs';
 import BouncyButtonElement from '../components/Resuable/BouncyButtonElement';
 import AnimatedCustomBackground from '../components/MainPartials/AnimatedCustomBackground';
 
@@ -43,7 +43,7 @@ const MainScreen = () => {
   };
 
   const onTrips = () => {
-    navigate('permissions');
+    navigate('trips');
   };
 
   return (
@@ -68,7 +68,7 @@ const MainScreen = () => {
             <MapIcon width={32} height={32} />
             <TextElement cStyle={{color: 'white'}}>MY TRIPS</TextElement>
           </Pressable>
-          <Pressable
+          {/* <Pressable
             onPress={() => navigate('testing')}
             style={({pressed}) => {
               return {
@@ -79,6 +79,18 @@ const MainScreen = () => {
             }}>
             <MapIcon width={32} height={32} />
             <TextElement cStyle={{color: 'white'}}>Testing</TextElement>
+          </Pressable> */}
+          <Pressable
+            onPress={() => navigate('permissions')}
+            style={({pressed}) => {
+              return {
+                opacity: pressed ? 0.7 : 1,
+                padding: '2%',
+                alignItems: 'center',
+              };
+            }}>
+            <SettingsIcon width={30} height={30} />
+            <TextElement cStyle={{color: 'white'}}>{''}</TextElement>
           </Pressable>
         </View>
 
@@ -162,6 +174,7 @@ const styles = StyleSheet.create({
   barContainer: {
     width: PropDimensions.standardWidth,
     alignSelf: 'center',
+    justifyContent: 'space-between',
     marginBottom: '4%',
     flexDirection: 'row',
   },

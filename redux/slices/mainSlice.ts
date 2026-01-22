@@ -90,7 +90,7 @@ export const mainSlice = createSlice({
       ] = action.payload.value;
     },
     setPermissions: (state, action) => {
-      state.permissions = action.payload;
+      state.permissions = {...state.permissions, ...action.payload};
     },
     setBottomSheet: (state, action) => {
       state.bottomSheet = action.payload;

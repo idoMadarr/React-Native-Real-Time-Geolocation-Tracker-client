@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Dimensions,
   Linking,
   NativeModules,
   ScrollView,
@@ -10,51 +9,91 @@ import {
 import StatusBarElement from '../components/Resuable/StatusBarElement';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import * as Colors from '../assets/colors/palette.json';
-import TextElement from '../components/Resuable/TextElement';
 import {PropDimensions} from '../services/dimensions';
 import ButtonElement from '../components/Resuable/ButtonElement';
-import {permissions} from '../fixtures/permissions.json';
-import {useAppSelector} from '../redux/hooks/hooks';
+import {permissionsList} from '../fixtures/permissions.json';
+import {useAppDispatch, useAppSelector} from '../redux/hooks/hooks';
 import {askForgroundLocation} from '../utils/permissions';
 import PermissionItem from '../components/PermissionsPartials/PermissionItem';
+import {updatePermission} from '../redux/slices/mainSlice';
+import {navigate} from '../utils/rootNavigation';
+import LinearGradient from 'react-native-linear-gradient';
 
-const {GPSServices} = NativeModules;
+const {GPSServices, OverlayPermission} = NativeModules;
+
+const CustomBackground = () => {
+  const colors = [
+    Colors.secondary,
+    Colors.secondary,
+    Colors.secondary,
+    Colors.white,
+    Colors.white,
+    Colors.white,
+  ];
+
+  return (
+    <View style={StyleSheet.absoluteFillObject}>
+      <View style={styles.inner}>
+        <LinearGradient
+          colors={colors}
+          style={{
+            width: PropDimensions.circleButton,
+            height: PropDimensions.circleButton,
+          }}
+        />
+      </View>
+    </View>
+  );
+};
 
 const PermissionsScreen = () => {
-  const {
-    gps,
-    location,
-    backgroundLocation,
-    batteryOptimization,
-    notifications,
-    overlay,
-  } = useAppSelector(state => state.mainSlice.permissions);
+  const dispatch = useAppDispatch();
+
+  const permissions = useAppSelector(state => state.mainSlice.permissions);
 
   const onPress = (type: string) => {
     if (type === 'gps') {
-      if (gps) return;
+      if (permissions.gps) return;
 
       GPSServices.openGPSSettings();
     }
 
     if (type === 'location') {
-      if (location) return;
+      if (permissions.location) return;
 
-      askForgroundLocation();
+      askForgroundLocation(() => {
+        dispatch(updatePermission({type, value: true}));
+      });
     }
 
-    if (type === 'background_location') {
-      if (backgroundLocation) return;
+    if (type === 'backgroundLocation') {
+      if (permissions.backgroundLocation) return;
 
       Linking.openSettings();
     }
 
-    if (type === 'battery_optimization') {
-      if (batteryOptimization) return;
+    if (type === 'batteryOptimization') {
+      if (permissions.batteryOptimization) return;
 
       Linking.openSettings();
+    }
+
+    if (type === 'overlay') {
+      if (permissions.overlay) return;
+
+      OverlayPermission.requestOverlayPermission();
     }
   };
+
+  const onReady = () => {
+    if (isEnabled) navigate('main');
+  };
+
+  const isEnabled =
+    permissions.gps &&
+    permissions.location &&
+    permissions.backgroundLocation &&
+    permissions.batteryOptimization;
 
   return (
     <SafeAreaView edges={['bottom']} style={styles.screen}>
@@ -62,49 +101,16 @@ const PermissionsScreen = () => {
         barStyle={'light-content'}
         backgroundColor={Colors.white}
       />
-
+      <CustomBackground />
       <ScrollView showsVerticalScrollIndicator={false}>
-        {permissions.map((permission, index) => {
-          // let titleStatus = '';
-          // let colorStatus = Colors.placeholder;
-
-          // switch (permission.type) {
-          //   case 'gps':
-          //     titleStatus = gps ? 'Granted' : 'Enable';
-          //     colorStatus = gps ? Colors.speed : Colors.placeholder;
-          //     break;
-          //   case 'location':
-          //     titleStatus = location ? 'Granted' : 'Enable';
-          //     colorStatus = location ? Colors.speed : Colors.placeholder;
-          //     break;
-          //   case 'background_location':
-          //     titleStatus = backgroundLocation ? 'Granted' : 'Enable';
-          //     colorStatus = backgroundLocation
-          //       ? Colors.speed
-          //       : Colors.placeholder;
-          //     break;
-          //   case 'battery_optimization':
-          //     titleStatus = batteryOptimization ? 'Granted' : 'Enable';
-          //     colorStatus = batteryOptimization
-          //       ? Colors.speed
-          //       : Colors.placeholder;
-          //     break;
-          //   case 'notifications':
-          //     titleStatus = notifications ? 'Granted' : 'Enable';
-          //     colorStatus = notifications ? Colors.speed : Colors.placeholder;
-          //     break;
-          //   case 'overlay':
-          //     titleStatus = overlay ? 'Granted' : 'Enable';
-          //     colorStatus = overlay ? Colors.speed : Colors.placeholder;
-          //     break;
-          // }
-
+        {permissionsList.map((permission, index) => {
           return (
             <PermissionItem
               key={index}
               title={permission.title}
               description={permission.description}
-              type={permission.type}
+              // @ts-ignore:
+              status={permissions[permission.type]}
               onPress={onPress.bind(this, permission.type)}
             />
           );
@@ -112,10 +118,12 @@ const PermissionsScreen = () => {
       </ScrollView>
 
       <ButtonElement
-        title={'ALL SET'}
+        title={isEnabled ? 'READY' : 'Please allow device permissions'}
         titleColor={Colors.white}
-        backgroundColor={Colors.primary}
-        onPress={() => {}}
+        fontSize={'s'}
+        enable={isEnabled}
+        backgroundColor={Colors.secondary}
+        onPress={onReady}
         cStyle={styles.button}
       />
     </SafeAreaView>
@@ -126,11 +134,19 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
-
   button: {
-    width: PropDimensions.standardWidth,
+    width: PropDimensions.fullWidth,
+    borderRadius: 0,
     alignSelf: 'center',
-    marginBottom: '4%',
+  },
+  inner: {
+    position: 'absolute',
+    bottom: -100,
+    alignSelf: 'center',
+    borderRadius: 80,
+    overflow: 'hidden',
+    opacity: 0.1,
+    transform: [{scale: 6.0}],
   },
 });
 

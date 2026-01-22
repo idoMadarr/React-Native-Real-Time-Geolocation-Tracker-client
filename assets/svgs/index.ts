@@ -9,6 +9,7 @@ import MapIcon from './map.svg';
 import BackIcon from './arrow_back.svg';
 import ListIcon from './list.svg';
 import StatisticIcon from './statistic.svg';
+import SettingsIcon from './settings.svg';
 
 export {
   DestinationIcon,
@@ -22,4 +23,5 @@ export {
   MapIcon,
   ListIcon,
   StatisticIcon,
+  SettingsIcon,
 };

@@ -41,7 +41,7 @@ const ButtonElement: React.FC<ButtonElementType> = ({
       <View
         style={[
           styles.buttonContainer,
-          {backgroundColor: enable ? backgroundColor : '#eee'},
+          {backgroundColor: enable ? backgroundColor : '#dfdfdf'},
           {...cStyle},
         ]}>
         {isLoading ? (

@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {View, StyleSheet, SafeAreaView, NativeModules} from 'react-native';
-import {navigate} from '../utils/rootNavigation';
+import {replace} from '../utils/rootNavigation';
 import StatusBarElement from '../components/Resuable/StatusBarElement';
 import LottieView from 'lottie-react-native';
 import {useAppDispatch} from '../redux/hooks/hooks';
@@ -11,6 +11,7 @@ import {PropDimensions} from '../services/dimensions';
 import {
   checkBackgroundLocation,
   checkForgroundLocation,
+  checkPushNotifications,
   checkUnrestrictedBattery,
 } from '../utils/permissions';
 import {fetchRecords} from '../redux/actions/mainActions';
@@ -39,6 +40,7 @@ const InitScreen = () => {
     const backgroundStatus = await checkBackgroundLocation();
     const isGPSEnabled = await GPSServices.isGPSEnabled();
     const batteryStatus = await checkUnrestrictedBattery();
+    const notificationsStatus = await checkPushNotifications();
 
     dispatch(
       setPermissions({
@@ -46,7 +48,7 @@ const InitScreen = () => {
         location: forgroundStatus,
         backgroundLocation: backgroundStatus,
         batteryOptimization: batteryStatus,
-        notifications: false,
+        notifications: notificationsStatus,
         overlay: false,
       }),
     );
@@ -54,7 +56,7 @@ const InitScreen = () => {
     const records = await dispatch(fetchRecords(`${manufacturer}:${deviceId}`));
     if (records === false) return;
 
-    navigate(
+    replace(
       forgroundStatus && backgroundStatus && isGPSEnabled && batteryStatus
         ? 'main'
         : 'permissions',

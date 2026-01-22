@@ -6,6 +6,7 @@ import TextElement from '../Resuable/TextElement';
 import {BackIcon, ListIcon, StatisticIcon} from '../../assets/svgs';
 import {goBack} from '../../utils/rootNavigation';
 import Colors from '../../assets/colors/palette.json';
+import {useAppSelector} from '../../redux/hooks/hooks';
 interface GenericHeaderPropsType {
   title: string;
   description?: string;
@@ -15,6 +16,8 @@ const GenericHeader: React.FC<GenericHeaderPropsType> = ({
   title,
   description,
 }) => {
+  const appReady = useAppSelector(state => state.mainSlice.appReady);
+
   return (
     <SafeAreaView style={styles.headerContainer}>
       <View>
@@ -35,20 +38,22 @@ const GenericHeader: React.FC<GenericHeaderPropsType> = ({
           {description}
         </TextElement>
       </View>
-      <Pressable
-        onPress={goBack}
-        style={({pressed}) => {
-          return {
-            opacity: pressed ? 0.7 : 1,
-          };
-        }}>
-        <BackIcon
-          width={28}
-          height={28}
-          color={Colors.black}
-          style={styles.rotate}
-        />
-      </Pressable>
+      {appReady && (
+        <Pressable
+          onPress={goBack}
+          style={({pressed}) => {
+            return {
+              opacity: pressed ? 0.7 : 1,
+            };
+          }}>
+          <BackIcon
+            width={28}
+            height={28}
+            color={Colors.black}
+            style={styles.rotate}
+          />
+        </Pressable>
+      )}
     </SafeAreaView>
   );
 };

@@ -27,6 +27,7 @@ class MainApplication : Application(), ReactApplication {
                add(BatteryOptimizationPackage())
                add(RNGeofencePackage())
                add(ForegroundServicePackage())
+               add(OverlayPermissionPackage())
             }
 
         override fun getJSMainModuleName(): String = "index"

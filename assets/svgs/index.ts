@@ -10,6 +10,7 @@ import BackIcon from './arrow_back.svg';
 import ListIcon from './list.svg';
 import StatisticIcon from './statistic.svg';
 import SettingsIcon from './settings.svg';
+import TurnsIcon from './turns.svg';
 
 export {
   DestinationIcon,
@@ -24,4 +25,5 @@ export {
   ListIcon,
   StatisticIcon,
   SettingsIcon,
+  TurnsIcon,
 };

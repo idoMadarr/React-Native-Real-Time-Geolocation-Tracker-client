@@ -10,6 +10,7 @@ import {
   SpeedIcon,
   StopIcon,
   TimeIcon,
+  TurnsIcon,
 } from '../../assets/svgs';
 
 const StatisticBottomSheet = () => {
@@ -92,6 +93,17 @@ const StatisticBottomSheet = () => {
           )}`}</TextElement>
         </View>
         <View style={styles.section}>
+          <TimeIcon style={styles.icon} width={28} height={28} />
+          <TextElement fontSize={'s'} fontWeight={'bold'}>
+            {currentRecord.durationFormatted}
+          </TextElement>
+        </View>
+        <View style={styles.section}>
+          <StopIcon style={styles.icon} width={28} height={28} />
+          <TextElement fontWeight={'bold'}>{`(Stops)`}</TextElement>
+          <TextElement fontSize={'s'}>{`${currentRecord.stops} `}</TextElement>
+        </View>
+        <View style={styles.section}>
           <SpeedIcon
             fill={Colors.speed}
             style={styles.icon}
@@ -112,15 +124,12 @@ const StatisticBottomSheet = () => {
           )}`}</TextElement>
         </View>
         <View style={styles.section}>
-          <TimeIcon style={styles.icon} width={28} height={28} />
-          <TextElement fontSize={'s'} fontWeight={'bold'}>
-            {currentRecord.durationFormatted}
-          </TextElement>
-        </View>
-        <View style={styles.section}>
-          <StopIcon style={styles.icon} width={28} height={28} />
-          <TextElement fontWeight={'bold'}>{`(Stops)`}</TextElement>
-          <TextElement fontSize={'s'}>{`${currentRecord.stops} `}</TextElement>
+          <TurnsIcon style={styles.icon} width={28} height={28} />
+          <TextElement fontWeight={'bold'}>{`Turns`}</TextElement>
+          <TextElement
+            fontSize={'s'}>{`Sharp ${currentRecord.sharpTurns} `}</TextElement>
+          <TextElement
+            fontSize={'s'}>{`Uturns ${currentRecord.uTurns} `}</TextElement>
         </View>
       </View>
 
@@ -172,6 +181,7 @@ const styles = StyleSheet.create({
     width: PropDimensions.standardWidth,
     alignSelf: 'center',
     justifyContent: 'center',
+    flexWrap: 'wrap',
     flexDirection: 'row',
     marginVertical: '3%',
   },
@@ -200,6 +210,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginBottom: '2%',
+    opacity: 0.8,
   },
 });
 

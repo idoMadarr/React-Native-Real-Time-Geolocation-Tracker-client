@@ -9,11 +9,12 @@ export interface BottomSheetActionsPropsType {
 export interface RecordType {
   _id: string;
   distance: number;
+  waypoints: {longitude: number; latitude: number}[];
   averageSpeed: number;
   startTime: Date | string;
   endTime: Date | string;
-  waypoints: {longitude: number; latitude: number}[];
   image?: string | null;
+
   // Extended metrics
   maxSpeed?: number;
   minSpeed?: number;
@@ -34,6 +35,15 @@ export interface RecordType {
     time: number;
     startIndex: number;
     endIndex: number;
+  }>;
+  totalTurns: number;
+  sharpTurns: number;
+  uTurns: number;
+  maxTurnAngle: number;
+  turnEvents: Array<{
+    index: number;
+    angle: number;
+    severity: 'normal' | 'sharp' | 'u-turn';
   }>;
 }
 

@@ -2,11 +2,13 @@ import React from 'react';
 import {
   Linking,
   NativeModules,
+  Pressable,
   ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
 import StatusBarElement from '../components/Resuable/StatusBarElement';
+import Config from 'react-native-config';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import * as Colors from '../assets/colors/palette.json';
 import {PropDimensions} from '../services/dimensions';
@@ -18,6 +20,7 @@ import PermissionItem from '../components/PermissionsPartials/PermissionItem';
 import {updatePermission} from '../redux/slices/mainSlice';
 import {navigate} from '../utils/rootNavigation';
 import LinearGradient from 'react-native-linear-gradient';
+import TextElement from '../components/Resuable/TextElement';
 
 const {GPSServices, OverlayPermission} = NativeModules;
 
@@ -89,6 +92,8 @@ const PermissionsScreen = () => {
     if (isEnabled) navigate('main');
   };
 
+  const onPrivacyPolicy = () => Linking.openURL(Config.privacyPolicy!);
+
   const isEnabled =
     permissions.gps &&
     permissions.location &&
@@ -103,6 +108,17 @@ const PermissionsScreen = () => {
       />
       <CustomBackground />
       <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.policyContainer}>
+          <Pressable onPress={onPrivacyPolicy}>
+            <TextElement>
+              {'* Click here to check our full '}
+              <TextElement fontWeight={'bold'} cStyle={styles.policyText}>
+                {'Privacy Policy'}
+              </TextElement>
+              {' for more inforamtion.'}
+            </TextElement>
+          </Pressable>
+        </View>
         {permissionsList.map((permission, index) => {
           return (
             <PermissionItem
@@ -147,6 +163,15 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     opacity: 0.1,
     transform: [{scale: 6.0}],
+  },
+  policyContainer: {
+    width: PropDimensions.standardWidth,
+    alignSelf: 'center',
+    marginTop: '4%',
+  },
+  policyText: {
+    textDecorationLine: 'underline',
+    color: Colors.secondary,
   },
 });
 

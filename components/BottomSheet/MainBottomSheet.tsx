@@ -39,7 +39,7 @@ const MainBottomsheet = () => {
       }
 
       if (currentMessage === BottomSheetTypes.MESSAGE) {
-        extendBottomsheet('52%');
+        extendBottomsheet('30%');
         return;
       }
     }

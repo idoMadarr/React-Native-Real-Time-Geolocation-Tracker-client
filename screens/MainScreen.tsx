@@ -14,18 +14,21 @@ import {useMeasurement} from '../utils/useMeasurement';
 import TextElement from '../components/Resuable/TextElement';
 import ButtonElement from '../components/Resuable/ButtonElement';
 import * as Colors from '../assets/colors/palette.json';
-import {useAppDispatch} from '../redux/hooks/hooks';
-import {setAppReady} from '../redux/slices/mainSlice';
+import {useAppDispatch, useAppSelector} from '../redux/hooks/hooks';
+import {setAppReady, setBottomSheet} from '../redux/slices/mainSlice';
 import {navigate} from '../utils/rootNavigation';
 import {setDelay} from '../utils/helpers';
 import {MapIcon, SettingsIcon} from '../assets/svgs';
 import BouncyButtonElement from '../components/Resuable/BouncyButtonElement';
 import AnimatedCustomBackground from '../components/MainPartials/AnimatedCustomBackground';
+import {MessageBuilder} from '../models/MessageModel';
 
 const MainScreen = () => {
   const {currentLocation, startLocationUpdatesNative} = useMeasurement();
 
   const dispatch = useAppDispatch();
+
+  const permissions = useAppSelector(state => state.mainSlice.permissions);
 
   const mapRef: any = useRef(MapView);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +47,22 @@ const MainScreen = () => {
 
   const onTrips = () => {
     navigate('trips');
+  };
+
+  const onGeofence = () => {
+    if (permissions.notifications) {
+      return navigate('permissions');
+    }
+
+    const errorMessage = new MessageBuilder(() => navigate('permissions'))
+      .setMessage(`Notification permission require`)
+      .setContent(
+        'Allow notifications so we can alert you when location-based events occur, such as entering or exiting important areas during your trips.',
+      )
+      .setButtonTitle('Ok')
+      .build();
+
+    dispatch(setBottomSheet({type: 'message', content: errorMessage}));
   };
 
   return (
@@ -133,7 +152,7 @@ const MainScreen = () => {
       <View style={styles.geofenceContainer}>
         <ButtonElement
           backgroundColor={Colors.white}
-          onPress={() => navigate('geofence')}
+          onPress={onGeofence}
           title={'Set Geofence'}
           titleColor={Colors.secondary}
           fontSize={'s'}

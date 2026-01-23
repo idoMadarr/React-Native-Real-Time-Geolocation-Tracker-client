@@ -17,11 +17,9 @@ const MessageBottomSheet: React.FC<MessageType> = ({
 
   const onSubmit = async () => {
     setIsLoading(true);
-    if (onPress) {
-      await onPress();
-    } else {
-      closeBottomSheet!();
-    }
+    if (onPress) await onPress();
+
+    closeBottomSheet!();
 
     setIsLoading(false);
   };

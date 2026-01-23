@@ -9,7 +9,8 @@ import Colors from '../assets/colors/palette.json';
 import {RecordType, setCurrentRecord} from '../redux/slices/mainSlice';
 import {PropDimensions} from '../services/dimensions';
 import LinearGradient from 'react-native-linear-gradient';
-import {recordMockList} from '../fixtures/trip-mock.json';
+import EmptyTrips from '../components/TripsPartials/EmptyTrips';
+// import {recordMockList} from '../fixtures/trip-mock.json';
 
 const CustomBackground = () => {
   const colors = [
@@ -67,6 +68,7 @@ const TripsScreen = () => {
         renderItem={({item}) => (
           <RecordItem {...item} onRecord={onRecord.bind(this, item)} />
         )}
+        ListEmptyComponent={<EmptyTrips />}
       />
     </SafeAreaView>
   );

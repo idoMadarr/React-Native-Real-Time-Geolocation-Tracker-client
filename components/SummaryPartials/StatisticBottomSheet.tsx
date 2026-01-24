@@ -12,6 +12,7 @@ import {
   TimeIcon,
   TurnsIcon,
 } from '../../assets/svgs';
+import {samplePoints} from '../../utils/helpers';
 
 const StatisticBottomSheet = () => {
   const currentRecord = useAppSelector(state => state.mainSlice.currentRecord!);
@@ -56,6 +57,8 @@ const StatisticBottomSheet = () => {
       dataPointText: seg.speed.toFixed(1),
     };
   });
+
+  const chartData = samplePoints(lineData ?? [], 200);
 
   // Calculate max value rounded up to nearest 10 for Y-axis
   const maxSpeed = Math.max(
@@ -135,17 +138,18 @@ const StatisticBottomSheet = () => {
 
       <View style={styles.segmentContainer}>
         <LineChart
-          data={lineData}
+          data={chartData}
           curved
           showVerticalLines={false}
           spacing={spacing}
-          isAnimated={true}
+          isAnimated={false}
           thickness={2}
           // yAxisLabelSuffix={'km/h'}
           disableScroll={true}
           maxValue={maxValue}
           noOfSections={noOfSections}
           color={Colors.secondary}
+          hideDataPoints={true}
           yAxisTextStyle={styles.yAxisTextStyle}
           xAxisLabelTextStyle={styles.xAxisLabelTextStyle}
           width={PropDimensions.standardWidth}

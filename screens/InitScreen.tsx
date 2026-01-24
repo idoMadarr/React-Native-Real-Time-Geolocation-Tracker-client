@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, StyleSheet, SafeAreaView, NativeModules} from 'react-native';
+import {View, StyleSheet, SafeAreaView} from 'react-native';
 import {replace} from '../utils/rootNavigation';
 import StatusBarElement from '../components/Resuable/StatusBarElement';
 import LottieView from 'lottie-react-native';
@@ -8,18 +8,10 @@ import Colors from '../assets/colors/palette.json';
 import TextElement from '../components/Resuable/TextElement';
 import LinearGradient from 'react-native-linear-gradient';
 import {PropDimensions} from '../services/dimensions';
-import {
-  checkBackgroundLocation,
-  checkForgroundLocation,
-  checkPushNotifications,
-  checkUnrestrictedBattery,
-} from '../utils/permissions';
+import {checkAppPermissions} from '../utils/permissions';
 import {fetchRecords} from '../redux/actions/mainActions';
 import {getManufacturer, getUniqueId} from 'react-native-device-info';
 import Config from 'react-native-config';
-import {setPermissions} from '../redux/slices/mainSlice';
-
-const {GPSServices} = NativeModules;
 
 const InitScreen = () => {
   const dispatch = useAppDispatch();
@@ -36,31 +28,12 @@ const InitScreen = () => {
     const deviceId = await getUniqueId();
     const manufacturer = await getManufacturer();
 
-    const forgroundStatus = await checkForgroundLocation();
-    const backgroundStatus = await checkBackgroundLocation();
-    const isGPSEnabled = await GPSServices.isGPSEnabled();
-    const batteryStatus = await checkUnrestrictedBattery();
-    const notificationsStatus = await checkPushNotifications();
-
-    dispatch(
-      setPermissions({
-        gps: isGPSEnabled,
-        location: forgroundStatus,
-        backgroundLocation: backgroundStatus,
-        batteryOptimization: batteryStatus,
-        notifications: notificationsStatus,
-        overlay: false,
-      }),
-    );
+    const mandatoryPermissions = await checkAppPermissions();
 
     const records = await dispatch(fetchRecords(`${manufacturer}:${deviceId}`));
     if (records === false) return;
 
-    replace(
-      forgroundStatus && backgroundStatus && isGPSEnabled && batteryStatus
-        ? 'main'
-        : 'permissions',
-    );
+    replace(mandatoryPermissions ? 'main' : 'permissions');
   };
 
   const CustomBackground = () => {

@@ -99,4 +99,6 @@ export const checkAppPermissions = async () => {
       overlay: overlayStatus,
     }),
   );
+
+  return isGPSEnabled && forgroundStatus && backgroundStatus && batteryStatus;
 };

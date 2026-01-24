@@ -325,8 +325,8 @@ export interface RoadRecordAnalysis {
   distance: number;
   averageSpeed: number;
   waypoints: Waypoint[];
-  startTime: Date;
-  endTime: Date;
+  startTime: Date | string;
+  endTime: Date | string;
   // Extended metrics
   maxSpeed: number;
   minSpeed: number;

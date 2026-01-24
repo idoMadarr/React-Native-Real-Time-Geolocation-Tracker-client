@@ -1,5 +1,5 @@
-import React, {useRef} from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
+import React, {useEffect, useRef} from 'react';
+import {Dimensions, StyleSheet, View, AppState} from 'react-native';
 import {PropDimensions} from '../services/dimensions';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {useMeasurement} from '../utils/useMeasurement';
@@ -17,7 +17,43 @@ const DriveScreen = () => {
 
   const mapRef: any = useRef(MapView);
 
-  const {currentLocation} = useMeasurement();
+  const {currentLocation, fetchCurrentLocation} = useMeasurement();
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    const startPolling = () => {
+      fetchCurrentLocation();
+      interval = setInterval(fetchCurrentLocation, 10000);
+    };
+
+    const stopPolling = () => {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+    };
+
+    const handleAppStateChange = (state: string) => {
+      if (state === 'active') {
+        startPolling();
+      } else {
+        stopPolling();
+      }
+    };
+
+    startPolling();
+
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange,
+    );
+
+    return () => {
+      stopPolling();
+      subscription.remove();
+    };
+  }, []);
 
   const onStop = async () => {
     dispatch(setBottomSheet({type: BottomSheetTypes.ACTIONS}));

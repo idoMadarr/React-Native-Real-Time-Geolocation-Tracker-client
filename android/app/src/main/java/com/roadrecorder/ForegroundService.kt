@@ -16,7 +16,16 @@ class ForegroundService : Service() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
 
+    companion object {
+        const val ACTION_APP_OPENED_FROM_BUBBLE = "APP_OPENED_FROM_BUBBLE"
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_APP_OPENED_FROM_BUBBLE) {
+            updateBubbleVisibility()
+            return START_STICKY
+        }
+
         val notification = NotificationCompat.Builder(this, "trip_channel")
             .setContentTitle("Trip in Progress")
             .setContentText("We’re recording your trip to provide insights and stats")
@@ -25,8 +34,11 @@ class ForegroundService : Service() {
             .build()
 
         startForeground(1, notification)
+
         // Do any background work here (e.g., start tracking)
+        startBubbleHead()
         startLocationUpdates()
+        updateBubbleVisibility()
 
         // START_STICKY ensures that the service is restarted if it's killed by the system
         return START_STICKY
@@ -35,8 +47,38 @@ class ForegroundService : Service() {
     // Remove notification and stop service when user kill the app
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
+        stopBubbleHead()
         stopSelf()
     }
+
+    private fun startBubbleHead() {
+        Log.d("BubbleHeadService", "onCreate called");
+        val intent = Intent(this, BubbleHeadService::class.java)
+        startService(intent)
+    }
+
+    private fun stopBubbleHead() {
+        val intent = Intent(this, BubbleHeadService::class.java)
+        intent.action = BubbleHeadService.ACTION_CLOSE_WITH_ANIMATION
+        startService(intent)
+    }
+
+    private var bubbleVisible = false
+
+    private fun updateBubbleVisibility() {
+        if (AppLifecycle.isAppInForeground) {
+            if (bubbleVisible) {
+                stopBubbleHead()
+                bubbleVisible = false
+            }
+        } else {
+            if (!bubbleVisible) {
+                startBubbleHead()
+                bubbleVisible = true
+            }
+        }
+    }
+
 
     private fun startLocationUpdates() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -49,6 +91,8 @@ class ForegroundService : Service() {
 
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
+                updateBubbleVisibility()
+
                 for (location in locationResult.locations) {
                     Log.d("ForegroundService", "New location: $location")
                     sendLocationToJS(location)
@@ -100,6 +144,7 @@ class ForegroundService : Service() {
         super.onDestroy()
         stopLocationUpdates()
         fusedLocationClient.removeLocationUpdates(locationCallback)
+        stopBubbleHead()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

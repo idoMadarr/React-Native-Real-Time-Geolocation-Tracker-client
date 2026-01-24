@@ -153,7 +153,7 @@ const StatisticBottomSheet = () => {
           yAxisTextStyle={styles.yAxisTextStyle}
           xAxisLabelTextStyle={styles.xAxisLabelTextStyle}
           width={PropDimensions.standardWidth}
-          height={Dimensions.get('window').height * 0.2}
+          height={Dimensions.get('window').height * 0.3}
         />
         <TextElement cStyle={styles.unit} fontSize={'s'}>
           {'* Unit: km/h'}

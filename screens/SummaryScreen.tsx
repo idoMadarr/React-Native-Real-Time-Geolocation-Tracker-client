@@ -124,7 +124,7 @@ const SummaryScreen = () => {
             longitudeDelta: 0.01,
           }}
           provider={PROVIDER_GOOGLE}
-          showsUserLocation={true}
+          showsUserLocation={false}
           showsMyLocationButton={false}
           onMapReady={updateLayout}>
           <Marker coordinate={currentRecord.waypoints[0]} />

@@ -9,6 +9,7 @@ import Config from 'react-native-config';
 import {
   analyzeRoadRecord,
   GeolocationResponse,
+  RoadRecordAnalysis,
 } from '../../utils/haversineFormula';
 import {getFromStorage, saveToStorage} from '../../utils/asyncstorage';
 import uuid from 'react-native-uuid';
@@ -159,7 +160,7 @@ export const fetchRecords =
     }
   };
 
-export const tripAnalaytics = async (record: any) => {
+export const tripAnalaytics = async (record: RoadRecordAnalysis) => {
   try {
     const response = await axios.post(`${Config.agent_url}/analyze_trip`, {
       trip_data: record,

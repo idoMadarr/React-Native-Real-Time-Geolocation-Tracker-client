@@ -11,6 +11,7 @@ import com.google.android.gms.location.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.Arguments
+import android.provider.Settings
 
 class ForegroundService : Service() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -44,6 +45,10 @@ class ForegroundService : Service() {
         return START_STICKY
     }
 
+    private fun canDrawOverlays(): Boolean {
+        return Settings.canDrawOverlays(this)
+    }
+
     // Remove notification and stop service when user kill the app
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
@@ -52,15 +57,19 @@ class ForegroundService : Service() {
     }
 
     private fun startBubbleHead() {
-        Log.d("BubbleHeadService", "onCreate called");
-        val intent = Intent(this, BubbleHeadService::class.java)
-        startService(intent)
+        if (canDrawOverlays()) {
+            Log.d("BubbleHeadService", "onCreate called");
+            val intent = Intent(this, BubbleHeadService::class.java)
+            startService(intent)
+        }
     }
 
     private fun stopBubbleHead() {
-        val intent = Intent(this, BubbleHeadService::class.java)
-        intent.action = BubbleHeadService.ACTION_CLOSE_WITH_ANIMATION
-        startService(intent)
+        if (canDrawOverlays()) {
+            val intent = Intent(this, BubbleHeadService::class.java)
+            intent.action = BubbleHeadService.ACTION_CLOSE_WITH_ANIMATION
+            startService(intent)
+        }
     }
 
     private var bubbleVisible = false
@@ -78,7 +87,6 @@ class ForegroundService : Service() {
             }
         }
     }
-
 
     private fun startLocationUpdates() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)

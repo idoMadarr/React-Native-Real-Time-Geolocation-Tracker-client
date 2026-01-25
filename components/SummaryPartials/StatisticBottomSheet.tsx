@@ -1,5 +1,5 @@
-import {Dimensions, StyleSheet, View} from 'react-native';
-import React, {Fragment} from 'react';
+import {ActivityIndicator, Dimensions, StyleSheet, View} from 'react-native';
+import React, {Fragment, useEffect, useState} from 'react';
 import TextElement from '../Resuable/TextElement';
 import {LineChart} from 'react-native-gifted-charts';
 import {useAppSelector} from '../../redux/hooks/hooks';
@@ -13,9 +13,33 @@ import {
   TurnsIcon,
 } from '../../assets/svgs';
 import {samplePoints} from '../../utils/helpers';
+import {tripAnalaytics} from '../../redux/actions/mainActions';
+import {RoadRecordAnalysis} from '../../utils/haversineFormula';
 
 const StatisticBottomSheet = () => {
   const currentRecord = useAppSelector(state => state.mainSlice.currentRecord!);
+
+  const [aiResults, setAiResults] = useState<string | null>(null);
+
+  useEffect(() => {
+    aiAnalytics();
+  }, []);
+
+  const aiAnalytics = async () => {
+    const sampleWaypoints = samplePoints(currentRecord.waypoints, 10);
+    const dataToAnalyize = {
+      ...currentRecord,
+      waypoints: sampleWaypoints,
+    };
+
+    delete dataToAnalyize.segments;
+    delete dataToAnalyize.image;
+
+    const res = await tripAnalaytics(dataToAnalyize as RoadRecordAnalysis);
+
+    if (res.agent_message) setAiResults(res.agent_message);
+    else setAiResults('Server Error');
+  };
 
   const recordStartTime = new Date(currentRecord.startTime).toLocaleString(
     'en-US',
@@ -159,6 +183,26 @@ const StatisticBottomSheet = () => {
           {'* Unit: km/h'}
         </TextElement>
       </View>
+
+      <View style={styles.analyticsContainer}>
+        {aiResults === null ? (
+          <Fragment>
+            <ActivityIndicator color={Colors.primary} size={'small'} />
+            <TextElement cStyle={{opacity: 0.5}} fontSize={'s'}>
+              Fetching AI analytics
+            </TextElement>
+          </Fragment>
+        ) : (
+          <Fragment>
+            <View style={styles.seperator} />
+            <TextElement
+              fontWeight={'bold'}
+              cStyle={styles.analyticsTitle}
+              fontSize="lg">{`Drive Analytics:`}</TextElement>
+            <TextElement>{`* ${aiResults}`}</TextElement>
+          </Fragment>
+        )}
+      </View>
     </Fragment>
   );
 };
@@ -205,6 +249,17 @@ const styles = StyleSheet.create({
   },
   xAxisLabelTextStyle: {
     display: 'none',
+  },
+  analyticsContainer: {
+    alignItems: 'center',
+    width: PropDimensions.standardWidth,
+    alignSelf: 'center',
+    marginTop: '5%',
+    marginBottom: '15%',
+  },
+  analyticsTitle: {
+    color: Colors.secondary,
+    marginBottom: '2%',
   },
   textAlign: {
     textAlign: 'center',

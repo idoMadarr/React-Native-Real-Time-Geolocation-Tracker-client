@@ -51,7 +51,7 @@ const MainScreen = () => {
 
   const onGeofence = () => {
     if (permissions.notifications) {
-      return navigate('permissions');
+      return navigate('geofence');
     }
 
     const errorMessage = new MessageBuilder(() => navigate('permissions'))

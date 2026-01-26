@@ -2,14 +2,14 @@
   "recordMockList": [
     {
       "_id": "b3c21b9a-4f2e-4d99-9b6e-2f71c8a98c11",
-      "distance": 2135.7,
-      "averageSpeed": 23.8,
-      "maxSpeed": 48.2,
-      "minSpeed": 0,
+      "distance": 4135.7,
+      "averageSpeed": 43.8,
+      "maxSpeed": 88.2,
+      "minSpeed": 12,
       "startTime": "2026-01-09T16:25:31.101Z",
       "endTime": "2026-01-09T16:28:41.101Z",
       "duration": 190000,
-      "durationFormatted": "3m 10s",
+      "durationFormatted": "6m 10s",
       "pickupAddress": "Rishon lezion, hakokita 48 str",
       "destinationAddress": "Tel Aviv, rotchild 8 str",
       "waypoints": [
@@ -562,6 +562,8 @@
           "endIndex": 19
         }
       ],
+      "sharpTurns": 2,
+      "uTurns": 0,
       "averageHeading": 47,
       "elevationGain": 6.2,
       "elevationLoss": 4.9,

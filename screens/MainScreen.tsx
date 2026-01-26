@@ -1,5 +1,11 @@
-import React, {useRef, useEffect} from 'react';
-import {View, StyleSheet, ActivityIndicator, Dimensions} from 'react-native';
+import React, {useRef, useEffect, useState} from 'react';
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  Dimensions,
+  Pressable,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {PropDimensions} from '../services/dimensions';
@@ -8,152 +14,55 @@ import {useMeasurement} from '../utils/useMeasurement';
 import TextElement from '../components/Resuable/TextElement';
 import ButtonElement from '../components/Resuable/ButtonElement';
 import * as Colors from '../assets/colors/palette.json';
-import Animated, {
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
 import {useAppDispatch, useAppSelector} from '../redux/hooks/hooks';
-import LinearGradient from 'react-native-linear-gradient';
-import DriveMode from '../components/MainPartials/DriveMode';
-import {
-  RecordType,
-  setAppReady,
-  setBottomSheet,
-  setCurrentRecord,
-} from '../redux/slices/mainSlice';
-import RecordItem from '../components/MainPartials/RecordItem';
+import {setAppReady, setBottomSheet} from '../redux/slices/mainSlice';
 import {navigate} from '../utils/rootNavigation';
-
-const RECORD_ITEM_WIDTH = PropDimensions.fullWidth * 0.7;
-const SPACER = (PropDimensions.fullWidth - RECORD_ITEM_WIDTH) / 2;
+import {setDelay} from '../utils/helpers';
+import {MapIcon, SettingsIcon} from '../assets/svgs';
+import BouncyButtonElement from '../components/Resuable/BouncyButtonElement';
+import AnimatedCustomBackground from '../components/MainPartials/AnimatedCustomBackground';
+import {MessageBuilder} from '../models/MessageModel';
 
 const MainScreen = () => {
-  const {currentLocation, startMeasurement, stopMeasurement} = useMeasurement();
+  const {currentLocation, startLocationUpdatesNative} = useMeasurement();
 
   const dispatch = useAppDispatch();
 
+  const permissions = useAppSelector(state => state.mainSlice.permissions);
+
   const mapRef: any = useRef(MapView);
-  const recordList = useAppSelector(state => state.mainSlice.recordList);
-  const displayRecordList = [{spacer: true}, ...recordList, {spacer: true}];
-
-  // Animated BG Transition:
-  const backgroundScale = useSharedValue(7.2);
-
-  // Animated Elements:
-  const buttonTranslateX = useSharedValue(0);
-  const locationcTranslateX = useSharedValue(0);
-  const lottieOpacity = useSharedValue(0);
-  const recordListOpacity = useSharedValue(1);
-  const recordListX = useSharedValue(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     dispatch(setAppReady());
-  }, []);
+  }, [dispatch]);
 
-  const onStart = () => {
-    buttonTranslateX.value = PropDimensions.fullWidth;
-    locationcTranslateX.value = -PropDimensions.fullWidth;
-    backgroundScale.value = 0;
-    lottieOpacity.value = 1;
-    recordListOpacity.value = 0;
-
-    startMeasurement();
+  const onStart = async () => {
+    setIsLoading(true);
+    await setDelay(500);
+    startLocationUpdatesNative();
+    setIsLoading(false);
+    navigate('drive');
   };
 
-  const onStop = async () => {
-    const modalActions = {
-      fetchMeasurement: async () => {
-        const result = await stopMeasurement();
-
-        return result;
-      },
-      onSave: async () => {
-        buttonTranslateX.value = 0;
-        locationcTranslateX.value = 0;
-        backgroundScale.value = 7.2;
-        lottieOpacity.value = 0;
-        recordListOpacity.value = 1;
-      },
-    };
-
-    dispatch(setBottomSheet({type: 'actions', content: modalActions}));
+  const onTrips = () => {
+    navigate('trips');
   };
 
-  const onRecord = async (content: RecordType) => {
-    await dispatch(setCurrentRecord(content));
-    await dispatch(setBottomSheet({type: 'details'}));
-  };
+  const onGeofence = () => {
+    if (permissions.notifications) {
+      return navigate('geofence');
+    }
 
-  const buttonTranslateXAnimation = useAnimatedStyle(() => {
-    return {
-      transform: [{translateX: withTiming(buttonTranslateX.value)}],
-    };
-  });
+    const errorMessage = new MessageBuilder(() => navigate('permissions'))
+      .setMessage(`Notification permission require`)
+      .setContent(
+        'Allow notifications so we can alert you when location-based events occur, such as entering or exiting important areas during your trips.',
+      )
+      .setButtonTitle('Ok')
+      .build();
 
-  const locationTranslateXAnimation = useAnimatedStyle(() => {
-    return {
-      transform: [{translateX: withTiming(locationcTranslateX.value)}],
-    };
-  });
-
-  const backgroundScaleAnimation = useAnimatedStyle(() => {
-    return {
-      transform: [{scale: withTiming(backgroundScale.value)}],
-    };
-  });
-
-  const lottieOpacityAnimation = useAnimatedStyle(() => {
-    return {
-      opacity: withTiming(lottieOpacity.value),
-    };
-  });
-
-  const recordListOpacityAnimation = useAnimatedStyle(() => {
-    return {
-      opacity: withTiming(recordListOpacity.value),
-      display: recordListOpacity.value === 0 ? 'none' : 'flex',
-    };
-  });
-
-  const onScroll = useAnimatedScrollHandler({
-    onScroll: event => {
-      recordListX.value = event.contentOffset.x;
-    },
-  });
-
-  const CustomBackground = () => {
-    const colors = [
-      Colors.primary,
-      Colors.primary,
-      Colors.primary,
-      Colors.primary,
-      Colors.secondary,
-    ];
-
-    return (
-      <View style={[StyleSheet.absoluteFillObject, styles.customBackground]}>
-        <Animated.View style={[styles.inner, backgroundScaleAnimation]}>
-          <LinearGradient
-            colors={colors}
-            style={{
-              width: PropDimensions.circleButton,
-              height: PropDimensions.circleButton,
-            }}
-          />
-        </Animated.View>
-      </View>
-    );
-  };
-
-  const DriveAnimation = () => {
-    return (
-      <Animated.View
-        style={[styles.driveModeContainer, lottieOpacityAnimation]}>
-        <DriveMode onStop={onStop} />
-      </Animated.View>
-    );
+    dispatch(setBottomSheet({type: 'message', content: errorMessage}));
   };
 
   return (
@@ -162,51 +71,88 @@ const MainScreen = () => {
         barStyle={'light-content'}
         backgroundColor={Colors.primary}
       />
-      <CustomBackground />
-      <DriveAnimation />
+      <AnimatedCustomBackground />
 
-      <Animated.View style={[styles.mapContainer, locationTranslateXAnimation]}>
-        <View style={styles.headerMapContainer}>
-          <TextElement fontWeight={'bold'} cStyle={styles.currentLocationText}>
-            - Current Location -
-          </TextElement>
+      <View>
+        <View style={styles.barContainer}>
+          <Pressable
+            onPress={onTrips}
+            style={({pressed}) => {
+              return {
+                opacity: pressed ? 0.7 : 1,
+                padding: '2%',
+                justifyContent: 'center',
+              };
+            }}>
+            <MapIcon width={32} height={32} />
+            <TextElement cStyle={{color: 'white'}}>MY TRIPS</TextElement>
+          </Pressable>
+          {/* <Pressable
+            onPress={() => navigate('testing')}
+            style={({pressed}) => {
+              return {
+                opacity: pressed ? 0.7 : 1,
+                padding: '2%',
+                justifyContent: 'center',
+              };
+            }}>
+            <MapIcon width={32} height={32} />
+            <TextElement cStyle={{color: 'white'}}>Testing</TextElement>
+          </Pressable> */}
+          <Pressable
+            onPress={() => navigate('permissions')}
+            style={({pressed}) => {
+              return {
+                opacity: pressed ? 0.7 : 1,
+                padding: '2%',
+                alignItems: 'center',
+              };
+            }}>
+            <SettingsIcon width={30} height={30} />
+            <TextElement cStyle={{color: 'white'}}>{''}</TextElement>
+          </Pressable>
         </View>
-        <View style={styles.map}>
-          {currentLocation ? (
-            <MapView
-              ref={mapRef}
-              style={{flex: 1}}
-              initialRegion={{
-                latitude: currentLocation.coords.latitude,
-                longitude: currentLocation.coords.longitude,
-                // Delta values is the inital scoop view of the map (zoom)
-                latitudeDelta: 0.002,
-                longitudeDelta: 0.002,
-              }}
-              liteMode={true}
-              provider={PROVIDER_GOOGLE}
-              showsUserLocation={false}
-              showsMyLocationButton={false}>
-              <Marker
-                coordinate={currentLocation.coords}
-                pinColor={Colors.warning}
+
+        <TextElement cStyle={styles.currentLocationText}>
+          Current Location:
+        </TextElement>
+        <View style={styles.mapContainer}>
+          <View style={styles.map}>
+            {currentLocation ? (
+              <MapView
+                ref={mapRef}
+                style={{flex: 1}}
+                initialRegion={{
+                  latitude: currentLocation.coords.latitude,
+                  longitude: currentLocation.coords.longitude,
+                  // Delta values is the inital scoop view of the map (zoom)
+                  latitudeDelta: 0.002,
+                  longitudeDelta: 0.002,
+                }}
+                liteMode={true}
+                provider={PROVIDER_GOOGLE}
+                showsUserLocation={false}
+                showsMyLocationButton={false}>
+                <Marker
+                  coordinate={currentLocation.coords}
+                  pinColor={Colors.warning}
+                />
+              </MapView>
+            ) : (
+              <ActivityIndicator
+                size={'small'}
+                color={Colors.primary}
+                style={styles.spinner}
               />
-            </MapView>
-          ) : (
-            <ActivityIndicator
-              size={'small'}
-              color={Colors.primary}
-              style={styles.spinner}
-            />
-          )}
+            )}
+          </View>
         </View>
-      </Animated.View>
+      </View>
 
-      <Animated.View
-        style={[styles.geofenceContainer, locationTranslateXAnimation]}>
+      <View style={styles.geofenceContainer}>
         <ButtonElement
           backgroundColor={Colors.white}
-          onPress={() => navigate('geofence')}
+          onPress={onGeofence}
           title={'Set Geofence'}
           titleColor={Colors.secondary}
           fontSize={'s'}
@@ -216,50 +162,24 @@ const MainScreen = () => {
         <TextElement fontSize={'m'} cStyle={{color: Colors.white}}>
           * Get notification by location *
         </TextElement>
-      </Animated.View>
+      </View>
 
-      {recordList.length ? (
-        <Animated.ScrollView
-          style={[recordListOpacityAnimation]}
-          horizontal={true}
-          bounces={false}
-          scrollEnabled={recordList.length === 1 ? false : true}
-          scrollEventThrottle={16}
-          snapToInterval={PropDimensions.fullWidth * 0.76}
-          onScroll={onScroll}
-          decelerationRate={'fast'}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.scrollview}>
-          {displayRecordList.map((item, index) => {
-            if ('spacer' in item)
-              return <View key={index} style={{width: SPACER}} />;
-
-            return (
-              <RecordItem
-                key={index}
-                {...item}
-                onRecord={onRecord.bind(this, item)}
-              />
-            );
-          })}
-        </Animated.ScrollView>
-      ) : null}
-
-      <Animated.View style={[styles.startContainer, buttonTranslateXAnimation]}>
-        <ButtonElement
+      <View style={styles.startContainer}>
+        <BouncyButtonElement
           backgroundColor={Colors.secondary}
           onPress={onStart}
           fontWeight={'bold'}
           title={'START'}
           titleColor={Colors.white}
+          isLoading={isLoading}
           cStyle={styles.startButton}
         />
-        <TextElement fontWeight={'demi-bold'}>
+        <TextElement cStyle={{opacity: 0.5}} fontWeight={'demi-bold'}>
           Ready to hit the road? Press the button to start tracking your drive
           in real-time. We’ll capture your journey, providing accurate routes
           and distance details along the way!
         </TextElement>
-      </Animated.View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -268,74 +188,59 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingVertical: '8%',
+    paddingVertical: '10%',
   },
-  inner: {
+  barContainer: {
+    width: PropDimensions.standardWidth,
     alignSelf: 'center',
-    borderRadius: 150,
-    overflow: 'hidden',
+    justifyContent: 'space-between',
+    marginBottom: '4%',
+    flexDirection: 'row',
   },
   mapContainer: {
     alignSelf: 'center',
     height: PropDimensions.sectionHeight,
     width: PropDimensions.standardWidth,
-    padding: 8,
-    elevation: 8,
+    padding: 4,
+    elevation: 5,
     backgroundColor: '#eee',
     borderRadius: 16,
     overflow: 'hidden',
     justifyContent: 'space-between',
-    marginBottom: '2%',
-  },
-  headerMapContainer: {
-    height: '20%',
-    width: '100%',
-    justifyContent: 'center',
   },
   currentLocationText: {
-    textAlign: 'center',
-    color: Colors.secondary,
+    width: PropDimensions.standardWidth,
+    alignSelf: 'center',
+    marginBottom: '2%',
+    color: Colors.white,
   },
   map: {
-    height: '80%',
-    width: '100%',
+    flex: 1,
     overflow: 'hidden',
     borderRadius: 16,
-  },
-  scrollview: {
-    height: Dimensions.get('window').height * 0.21,
-    alignItems: 'center',
+    opacity: 0.4,
   },
   startContainer: {
     alignSelf: 'center',
     alignItems: 'center',
     width: PropDimensions.standardWidth,
   },
-  driveModeContainer: {
-    width: PropDimensions.fullWidth,
-    height: Dimensions.get('window').height * 0.3,
-    position: 'absolute',
-    top: '36%',
-  },
   startButton: {
     width: PropDimensions.circleButton,
     height: PropDimensions.circleButton,
     borderRadius: 90,
-    elevation: 8,
     marginBottom: '6%',
   },
   spinner: {
     position: 'absolute',
     left: '46%',
-    top: '30%',
-  },
-  customBackground: {
-    backgroundColor: Colors.white,
+    top: '42%',
   },
   geofenceContainer: {
     height: Dimensions.get('window').height * 0.1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: '18%',
   },
   geofenceButton: {
     borderRadius: 90,

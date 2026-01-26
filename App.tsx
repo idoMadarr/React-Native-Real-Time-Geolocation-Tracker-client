@@ -4,6 +4,7 @@ import {Provider} from 'react-redux';
 import KeepAwake from 'react-native-keep-awake';
 import AppNavigation from './navigation/AppNavigation';
 import store from './redux/store/store';
+import {MeasurementProvider} from './context/MeasurementContext';
 
 EStyleSheet.build({});
 
@@ -12,7 +13,9 @@ const App = () => {
 
   return (
     <Provider store={store}>
-      <AppNavigation />
+      <MeasurementProvider>
+        <AppNavigation />
+      </MeasurementProvider>
     </Provider>
   );
 };

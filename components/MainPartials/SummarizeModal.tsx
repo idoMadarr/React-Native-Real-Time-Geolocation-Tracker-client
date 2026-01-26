@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import ButtonElement from '../Resuable/ButtonElement';
 import Colors from '../../assets/colors/palette.json';
@@ -33,6 +33,15 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
   const mapRef: any = useRef(MapView);
   const viewshotRef = useRef<any>(null);
 
+  useEffect(() => {
+    if (mapRef.current && currentRecord.waypoints.length > 0) {
+      mapRef.current.fitToCoordinates(currentRecord.waypoints, {
+        edgePadding: {top: 100, right: 100, bottom: 100, left: 100},
+        animated: true,
+      });
+    }
+  }, [currentRecord]);
+
   const saveNDone = async () => {
     if (buttonTitle === 'Close') {
       return onDone();
@@ -46,7 +55,7 @@ const SummarizeModal: React.FC<SummarizeModalPropsType> = ({
         await dispatch(setGeofence(null));
         onDone();
       })
-      .catch((error: any) => {
+      .catch((_error: any) => {
         onDone();
       });
   };

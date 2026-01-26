@@ -12,6 +12,9 @@ import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import com.lugg.RNCConfig.RNCConfigPackage;
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 
 class MainApplication : Application(), ReactApplication {
 
@@ -23,6 +26,8 @@ class MainApplication : Application(), ReactApplication {
                add(GPSServicesPackage())
                add(BatteryOptimizationPackage())
                add(RNGeofencePackage())
+               add(ForegroundServicePackage())
+               add(OverlayPermissionPackage())
             }
 
         override fun getJSMainModuleName(): String = "index"
@@ -38,10 +43,24 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
+    createNotificationChannel()
+    registerActivityLifecycleCallbacks(AppLifecycle)
     SoLoader.init(this, OpenSourceMergedSoMapping)
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
   }
+
+   private fun createNotificationChannel() {
+       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+           val channel = NotificationChannel(
+               "trip_channel",
+               "Trip Notification",
+               NotificationManager.IMPORTANCE_LOW
+           )
+           val manager = getSystemService(NotificationManager::class.java)
+           manager.createNotificationChannel(channel)
+       }
+   }
 }

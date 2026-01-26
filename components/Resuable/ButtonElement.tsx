@@ -1,10 +1,5 @@
 import React, {JSX} from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+import {View, StyleSheet, ActivityIndicator, Pressable} from 'react-native';
 import {PropDimensions} from '../../services/dimensions';
 import TextElement from './TextElement';
 import Colors from '../../assets/colors/palette.json';
@@ -36,11 +31,17 @@ const ButtonElement: React.FC<ButtonElementType> = ({
   iconPosition,
 }) => {
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+    <Pressable
+      onPress={onPress}
+      style={({pressed}) => {
+        return {
+          opacity: pressed && enable ? 0.7 : 1,
+        };
+      }}>
       <View
         style={[
           styles.buttonContainer,
-          {backgroundColor: enable ? backgroundColor : '#eee'},
+          {backgroundColor: enable ? backgroundColor : '#dfdfdf'},
           {...cStyle},
         ]}>
         {isLoading ? (
@@ -68,7 +69,7 @@ const ButtonElement: React.FC<ButtonElementType> = ({
           </View>
         )}
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

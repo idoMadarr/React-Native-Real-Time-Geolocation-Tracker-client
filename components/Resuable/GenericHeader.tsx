@@ -4,19 +4,29 @@ import {PropDimensions} from '../../services/dimensions';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import TextElement from '../Resuable/TextElement';
 import {BackIcon, ListIcon, StatisticIcon} from '../../assets/svgs';
-import {goBack} from '../../utils/rootNavigation';
+import {goBack, navigate} from '../../utils/rootNavigation';
 import Colors from '../../assets/colors/palette.json';
 import {useAppSelector} from '../../redux/hooks/hooks';
 interface GenericHeaderPropsType {
   title: string;
   description?: string;
+  backDestination?: string;
 }
 
 const GenericHeader: React.FC<GenericHeaderPropsType> = ({
   title,
   description,
+  backDestination,
 }) => {
   const appReady = useAppSelector(state => state.mainSlice.appReady);
+
+  const onPress = () => {
+    if (backDestination) {
+      return navigate(backDestination);
+    }
+
+    goBack();
+  };
 
   return (
     <SafeAreaView style={styles.headerContainer}>
@@ -40,7 +50,7 @@ const GenericHeader: React.FC<GenericHeaderPropsType> = ({
       </View>
       {appReady && (
         <Pressable
-          onPress={goBack}
+          onPress={onPress}
           style={({pressed}) => {
             return {
               opacity: pressed ? 0.7 : 1,

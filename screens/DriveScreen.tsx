@@ -10,14 +10,19 @@ import ButtonElement from '../components/Resuable/ButtonElement';
 import LottieView from 'lottie-react-native';
 import {useAppDispatch} from '../redux/hooks/hooks';
 import {setBottomSheet} from '../redux/slices/mainSlice';
-import {BottomSheetTypes} from '../components/BottomSheet/BottomSheetTypes';
+import {MessageBuilder} from '../models/MessageModel';
+import {getManufacturer, getUniqueId} from 'react-native-device-info';
+import {saveRecord} from '../redux/actions/mainActions';
+import {navigate} from '../utils/rootNavigation';
+import {ScreenType} from '../navigation/NavigationType';
 
 const DriveScreen = () => {
   const dispatch = useAppDispatch();
 
   const mapRef: any = useRef(MapView);
 
-  const {currentLocation, fetchCurrentLocation} = useMeasurement();
+  const {currentLocation, fetchCurrentLocation, stopLocationUpdatesNative} =
+    useMeasurement();
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -55,8 +60,57 @@ const DriveScreen = () => {
     };
   }, []);
 
+  const onDone = async () => {
+    navigate(ScreenType.Main);
+    dispatch(setBottomSheet(null));
+  };
+
+  const onSummarize = async () => {
+    const measurement = stopLocationUpdatesNative();
+
+    if (!measurement?.direction.length) {
+      return handleInvalidRecord('No data recorded');
+    }
+    const deviceId = await getUniqueId();
+    const manufacturer = await getManufacturer();
+
+    const body = {
+      record: measurement.direction,
+      deviceId: `${manufacturer}:${deviceId}`,
+    };
+
+    const invalidRecord = await dispatch(saveRecord(body));
+    if (invalidRecord) {
+      return handleInvalidRecord(
+        invalidRecord.error || 'Unknown error occurred',
+      );
+    }
+
+    navigate(ScreenType.Summary);
+  };
+
+  const handleInvalidRecord = (error: string) => {
+    const errorMessage = new MessageBuilder(onDone)
+      .setMessage('Tracker Failed:')
+      .setContent(error)
+      .setButtonTitle('close')
+      .build();
+
+    return setTimeout(() => {
+      dispatch(setBottomSheet({type: 'message', content: errorMessage}));
+    }, 600);
+  };
+
   const onStop = async () => {
-    dispatch(setBottomSheet({type: BottomSheetTypes.ACTIONS}));
+    const message = new MessageBuilder(onSummarize)
+      .setMessage('End Drive')
+      .setContent(
+        'Are you sure you want to end the current drive? Your trip will stop being tracked, and all collected data will be saved. You can view the route and trip summary once the drive ends.',
+      )
+      .setButtonTitle('Summarize')
+      .build();
+
+    dispatch(setBottomSheet({type: 'message', content: message}));
   };
 
   return (

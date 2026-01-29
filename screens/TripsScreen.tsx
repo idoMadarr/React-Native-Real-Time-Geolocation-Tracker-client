@@ -10,6 +10,7 @@ import {RecordType, setCurrentRecord} from '../redux/slices/mainSlice';
 import {PropDimensions} from '../services/dimensions';
 import LinearGradient from 'react-native-linear-gradient';
 import EmptyTrips from '../components/TripsPartials/EmptyTrips';
+import {ScreenType} from '../navigation/NavigationType';
 // import {recordMockList} from '../fixtures/trip-mock.json';
 
 const CustomBackground = () => {
@@ -44,7 +45,7 @@ const TripsScreen = () => {
 
   const onRecord = (item: RecordType) => {
     dispatch(setCurrentRecord(item));
-    navigate('summary');
+    navigate(ScreenType.Summary);
   };
 
   return (

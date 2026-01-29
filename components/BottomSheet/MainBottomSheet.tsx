@@ -10,7 +10,6 @@ import MessageBottomSheet from '../MainPartials/MessageBottomSheet';
 import {MessageType} from '../../models/MessageModel';
 import {setBottomSheet} from '../../redux/slices/mainSlice';
 import Colors from '../../assets/colors/palette.json';
-import BottomSheetActions from './BottomSheetActions';
 
 const MainBottomsheet = () => {
   const dispatch = useAppDispatch();
@@ -32,11 +31,6 @@ const MainBottomsheet = () => {
   const handleMainBottomsheet = async () => {
     if (bottomSheet) {
       const currentMessage = bottomSheet.type;
-
-      if (currentMessage === BottomSheetTypes.ACTIONS) {
-        extendBottomsheet('30%');
-        return;
-      }
 
       if (currentMessage === BottomSheetTypes.MESSAGE) {
         extendBottomsheet('30%');
@@ -68,14 +62,6 @@ const MainBottomsheet = () => {
           <MessageBottomSheet
             {...(bottomSheet.content as MessageType)}
             closeBottomSheet={closeBottomSheet}
-          />
-        );
-        break;
-      case BottomSheetTypes.ACTIONS:
-        modalComponent = (
-          <BottomSheetActions
-            closeBottomSheet={closeBottomSheet}
-            extendBottomsheet={extendBottomsheet.bind(this, '90%')}
           />
         );
         break;

@@ -36,7 +36,6 @@ export const useMeasurement = () => {
     const subscription = eventEmitter.addListener(
       'onLocationUpdate',
       location => {
-        console.log(location);
         directionRef.current.push(location);
       },
     );

@@ -102,7 +102,7 @@ export const saveRecord =
 
       const userRecords = await getFromStorage('records');
       if (userRecords) {
-        userRecords.push(currentRecord);
+        userRecords.unshift(currentRecord);
         await saveToStorage('records', userRecords);
       } else {
         await saveToStorage('records', [currentRecord]);

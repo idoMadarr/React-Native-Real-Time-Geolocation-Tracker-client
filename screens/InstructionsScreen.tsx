@@ -24,6 +24,7 @@ import {navigate} from '../utils/rootNavigation';
 import * as Colors from '../assets/colors/palette.json';
 import {setAppReady} from '../redux/slices/mainSlice';
 import Config from 'react-native-config';
+import {ScreenType} from '../navigation/NavigationType';
 
 const {GPSServices} = NativeModules;
 
@@ -207,7 +208,7 @@ const InstructionsScreen = () => {
           gpsLocationStatus &&
           restrictBatteryStatus
         ) {
-          navigate('main');
+          navigate(ScreenType.Main);
         }
         break;
     }

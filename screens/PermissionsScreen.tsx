@@ -21,6 +21,7 @@ import {updatePermission} from '../redux/slices/mainSlice';
 import {navigate} from '../utils/rootNavigation';
 import LinearGradient from 'react-native-linear-gradient';
 import TextElement from '../components/Resuable/TextElement';
+import {ScreenType} from '../navigation/NavigationType';
 
 const {GPSServices, OverlayPermission} = NativeModules;
 
@@ -81,6 +82,12 @@ const PermissionsScreen = () => {
       Linking.openSettings();
     }
 
+    if (type === 'notifications') {
+      if (permissions.notifications) return;
+
+      Linking.openSettings();
+    }
+
     if (type === 'overlay') {
       if (permissions.overlay) return;
 
@@ -89,7 +96,7 @@ const PermissionsScreen = () => {
   };
 
   const onReady = () => {
-    if (isEnabled) navigate('main');
+    if (isEnabled) navigate(ScreenType.Main);
   };
 
   const onPrivacyPolicy = () => Linking.openURL(Config.privacyPolicy!);

@@ -22,6 +22,7 @@ import {MapIcon, SettingsIcon} from '../assets/svgs';
 import BouncyButtonElement from '../components/Resuable/BouncyButtonElement';
 import AnimatedCustomBackground from '../components/MainPartials/AnimatedCustomBackground';
 import {MessageBuilder} from '../models/MessageModel';
+import {ScreenType} from '../navigation/NavigationType';
 
 const MainScreen = () => {
   const {currentLocation, startLocationUpdatesNative} = useMeasurement();
@@ -42,19 +43,21 @@ const MainScreen = () => {
     await setDelay(500);
     startLocationUpdatesNative();
     setIsLoading(false);
-    navigate('drive');
+    navigate(ScreenType.Drive);
   };
 
   const onTrips = () => {
-    navigate('trips');
+    navigate(ScreenType.Trips);
   };
 
   const onGeofence = () => {
     if (permissions.notifications) {
-      return navigate('geofence');
+      return navigate(ScreenType.Geofence);
     }
 
-    const errorMessage = new MessageBuilder(() => navigate('permissions'))
+    const errorMessage = new MessageBuilder(() =>
+      navigate(ScreenType.Permissions),
+    )
       .setMessage(`Notification permission require`)
       .setContent(
         'Allow notifications so we can alert you when location-based events occur, such as entering or exiting important areas during your trips.',
@@ -100,7 +103,7 @@ const MainScreen = () => {
             <TextElement cStyle={{color: 'white'}}>Testing</TextElement>
           </Pressable> */}
           <Pressable
-            onPress={() => navigate('permissions')}
+            onPress={() => navigate(ScreenType.Permissions)}
             style={({pressed}) => {
               return {
                 opacity: pressed ? 0.7 : 1,

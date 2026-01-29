@@ -18,8 +18,9 @@ import TesterScreen from '../screens/TesterScreen';
 import MainBottomsheet from '../components/BottomSheet/MainBottomSheet';
 import GenericHeader from '../components/Resuable/GenericHeader';
 import PermissionsScreen from '../screens/PermissionsScreen';
+import {NavigationType, ScreenType} from './NavigationType';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<NavigationType>();
 
 const AppNavigation = () => {
   const appState = useRef(AppState.currentState);
@@ -45,9 +46,9 @@ const AppNavigation = () => {
     <GestureHandlerRootView style={styles.app}>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name={'splash'} component={InitScreen} />
+          <Stack.Screen name={ScreenType.Splash} component={InitScreen} />
           <Stack.Screen
-            name={'permissions'}
+            name={ScreenType.Permissions}
             component={PermissionsScreen}
             options={{
               headerShown: true,
@@ -57,21 +58,25 @@ const AppNavigation = () => {
                   description={
                     'We needs the following permissions to record your trips'
                   }
+                  backDestination={ScreenType.Main}
                 />
               ),
             }}
           />
-          <Stack.Screen name={'instructions'} component={InstructionsScreen} />
-          <Stack.Screen name={'main'} component={MainScreen} />
           <Stack.Screen
-            name={'drive'}
+            name={ScreenType.Instructions}
+            component={InstructionsScreen}
+          />
+          <Stack.Screen name={ScreenType.Main} component={MainScreen} />
+          <Stack.Screen
+            name={ScreenType.Drive}
             component={DriveScreen}
             options={{
               animation: 'slide_from_bottom',
             }}
           />
           <Stack.Screen
-            name={'trips'}
+            name={ScreenType.Trips}
             component={TripsScreen}
             options={{
               headerShown: true,
@@ -79,12 +84,13 @@ const AppNavigation = () => {
                 <GenericHeader
                   title={'Trips History'}
                   description={'Explore your past trips and driving activity'}
+                  backDestination={ScreenType.Main}
                 />
               ),
             }}
           />
           <Stack.Screen
-            name={'summary'}
+            name={ScreenType.Summary}
             component={SummaryScreen}
             options={{
               headerShown: true,
@@ -92,12 +98,13 @@ const AppNavigation = () => {
                 <GenericHeader
                   title={'Summary'}
                   description={'Check your driving statistics'}
+                  backDestination={ScreenType.Trips}
                 />
               ),
             }}
           />
-          <Stack.Screen name={'geofence'} component={GeofenceScreen} />
-          <Stack.Screen name={'testing'} component={TesterScreen} />
+          <Stack.Screen name={ScreenType.Geofence} component={GeofenceScreen} />
+          <Stack.Screen name={ScreenType.Testing} component={TesterScreen} />
         </Stack.Navigator>
         <MainBottomsheet />
       </NavigationContainer>
@@ -106,7 +113,9 @@ const AppNavigation = () => {
 };
 
 const styles = StyleSheet.create({
-  app: {flex: 1},
+  app: {
+    flex: 1,
+  },
 });
 
 export default AppNavigation;

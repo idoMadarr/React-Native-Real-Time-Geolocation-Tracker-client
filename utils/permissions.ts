@@ -12,7 +12,7 @@ import {setPermissions} from '../redux/slices/mainSlice';
 const {BatteryOptimizationModule, GPSServices, OverlayPermission} =
   NativeModules;
 
-export const askPushNotifications = async (cb?: () => void) => {
+export const _askPushNotifications = async (cb?: () => void) => {
   const {status} = await requestNotifications(['alert', 'sound']);
 
   if (status === RESULTS.GRANTED || status === RESULTS.LIMITED) {

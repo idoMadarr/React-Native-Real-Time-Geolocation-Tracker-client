@@ -1,11 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {MessageType} from '../../models/MessageModel';
 
-export interface BottomSheetActionsPropsType {
-  closeBottomSheet(): void;
-  extendBottomsheet(): void;
-}
-
 export interface RecordType {
   _id: string;
   distance: number;
@@ -67,7 +62,7 @@ interface RootStateApp {
   };
   bottomSheet: {
     type: string;
-    content?: BottomSheetActionsPropsType | MessageType;
+    content?: MessageType;
   } | null;
 }
 

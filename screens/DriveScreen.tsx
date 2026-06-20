@@ -117,7 +117,8 @@ const DriveScreen = () => {
     <View style={styles.container}>
       <StatusBarElement
         barStyle={'dark-content'}
-        backgroundColor={Colors.white}
+        backgroundColor={Colors.transparent}
+        translucent={true}
       />
 
       {currentLocation && (
@@ -154,7 +155,7 @@ const DriveScreen = () => {
       <LottieView
         autoPlay
         loop
-        source={require('../assets/animations/car_animation.json')}
+        source={require('../assets/animations/road_animation.json')}
         style={styles.lottie}
       />
       <ButtonElement
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: PropDimensions.fullWidth,
-    height: Dimensions.get('window').height * 0.4,
+    height: Dimensions.get('window').height * 0.5,
     opacity: 0.4,
   },
   stopButton: {
@@ -187,14 +188,14 @@ const styles = StyleSheet.create({
     height: PropDimensions.circleButton,
     elevation: 5,
     alignSelf: 'center',
-    zIndex: 10,
   },
   lottie: {
-    height: PropDimensions.fullHeight * 0.3,
-    width: PropDimensions.fullWidth,
+    height: PropDimensions.fullHeight * 0.5,
+    width: PropDimensions.fullWidth * 0.4,
+    alignSelf: 'center',
     position: 'absolute',
-    bottom: -Dimensions.get('window').height * 0.05,
-    zIndex: 5,
+    transform: [{rotate: '90deg'}],
+    bottom: -Dimensions.get('window').height * 0.16,
   },
 });
 

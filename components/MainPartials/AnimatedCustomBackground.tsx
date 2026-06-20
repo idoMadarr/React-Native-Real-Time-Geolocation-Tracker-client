@@ -41,7 +41,7 @@ const AnimatedCustomBackground = () => {
           colors={colors}
           style={{
             width: PropDimensions.circleButton,
-            height: PropDimensions.circleButton * 1.1,
+            height: PropDimensions.circleButton * 1.02,
           }}
         />
       </Animated.View>

@@ -23,15 +23,16 @@ import {FlagIcon, TripIcon} from '../assets/svgs';
 const SummaryScreen = () => {
   const currentRecord = useAppSelector(state => state.mainSlice.currentRecord!);
 
-  const [currentPhase, setCurrentPhase] = useState(1);
+  const [currentPhase, setCurrentPhase] = useState(0);
 
   const mapRef: any = useRef(MapView);
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  const destinationTranslateX = useSharedValue(0);
+  const destinationTranslateY = useSharedValue(0);
 
   const handleSheetChanges = useCallback(
     (index: number) => {
+      destinationTranslateY.value = index === 0 ? 0 : -200;
       setCurrentPhase(index);
       updateLayout();
     },
@@ -40,7 +41,6 @@ const SummaryScreen = () => {
 
   const updateLayout = () => {
     if (mapRef.current && currentRecord.waypoints.length > 0) {
-      destinationTranslateX.value = currentPhase === 0 ? -200 : 0;
       const paddingAValue = Dimensions.get('window').width * 0.2;
       const paddingBValue = Dimensions.get('window').width * 0.3;
 
@@ -66,14 +66,14 @@ const SummaryScreen = () => {
 
   const destinationContainerAnimation = useAnimatedStyle(() => {
     return {
-      transform: [{translateY: withTiming(destinationTranslateX.value)}],
+      transform: [{translateY: withTiming(destinationTranslateY.value)}],
     };
   });
 
   return (
     <View style={styles.container}>
       <StatusBarElement
-        backgroundColor={Colors.white}
+        backgroundColor={Colors.primary}
         barStyle={'dark-content'}
       />
       <View style={styles.mapContainer}>
@@ -144,7 +144,7 @@ const SummaryScreen = () => {
       <BottomSheet
         ref={bottomSheetRef}
         onChange={handleSheetChanges}
-        snapPoints={['25%', '65%']}
+        snapPoints={['25%', '65%', '100%']}
         index={0}
         enableDynamicSizing={false}
         animationConfigs={{duration: 450}}

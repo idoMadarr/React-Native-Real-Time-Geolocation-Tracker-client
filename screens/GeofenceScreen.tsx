@@ -215,7 +215,8 @@ const DestinationScreen = () => {
     <SafeAreaView style={styles.screen}>
       <StatusBarElement
         barStyle={'dark-content'}
-        backgroundColor={Colors.white}
+        backgroundColor={Colors.transparent}
+        translucent
       />
       <View style={styles.searchContainer}>
         <InputElement
@@ -244,6 +245,10 @@ const DestinationScreen = () => {
             style={styles.map}
             showsBuildings={true}
             showsUserLocation={true}
+            showsTraffic={true}
+            showsIndoors={true}
+            showsPointsOfInterest={true}
+            showsMyLocationButton={false}
             followsUserLocation={true}
             // Add onRegionChangeComplete to restrict user to specific area
             // onRegionChangeComplete={handleRegionChange}

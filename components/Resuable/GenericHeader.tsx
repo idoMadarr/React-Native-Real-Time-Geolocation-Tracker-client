@@ -50,20 +50,22 @@ const GenericHeader: React.FC<GenericHeaderPropsType> = ({
         </TextElement>
       </View>
       {appReady && (
-        <Pressable
-          onPress={onPress}
-          style={({pressed}) => {
-            return {
-              opacity: pressed ? 0.7 : 1,
-            };
-          }}>
-          <BackIcon
-            width={28}
-            height={28}
-            color={Colors.black}
-            style={styles.rotate}
-          />
-        </Pressable>
+        <View style={styles.content}>
+          <Pressable
+            onPress={onPress}
+            style={({pressed}) => {
+              return {
+                opacity: pressed ? 0.7 : 1,
+              };
+            }}>
+            <BackIcon
+              width={28}
+              height={28}
+              color={Colors.black}
+              style={styles.rotate}
+            />
+          </Pressable>
+        </View>
       )}
     </SafeAreaView>
   );
@@ -75,6 +77,8 @@ const styles = StyleSheet.create({
     width: PropDimensions.fullWidth,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    paddingBottom: '5%',
     paddingHorizontal: '18%',
     backgroundColor: Colors.primary,
   },
@@ -92,7 +96,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   description: {
-    opacity: 0.5,
+    opacity: 0.6,
   },
 });
 

@@ -51,7 +51,7 @@ const TripsScreen = () => {
   return (
     <SafeAreaView style={styles.screen}>
       <StatusBarElement
-        backgroundColor={Colors.white}
+        backgroundColor={Colors.primary}
         barStyle={'dark-content'}
       />
       <CustomBackground />

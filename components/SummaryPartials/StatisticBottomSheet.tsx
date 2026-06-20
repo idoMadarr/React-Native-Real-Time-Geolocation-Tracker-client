@@ -15,6 +15,7 @@ import {
 import {samplePoints} from '../../utils/helpers';
 import {tripAnalaytics} from '../../redux/actions/mainActions';
 import {RoadRecordAnalysis} from '../../utils/haversineFormula';
+import {FlagIcon, TripIcon} from '../../assets/svgs';
 
 const StatisticBottomSheet = () => {
   const currentRecord = useAppSelector(state => state.mainSlice.currentRecord!);
@@ -177,15 +178,50 @@ const StatisticBottomSheet = () => {
           yAxisTextStyle={styles.yAxisTextStyle}
           xAxisLabelTextStyle={styles.xAxisLabelTextStyle}
           width={PropDimensions.standardWidth}
-          height={Dimensions.get('window').height * 0.3}
+          height={Dimensions.get('window').height * 0.2}
         />
         <TextElement cStyle={styles.unit} fontSize={'s'}>
           {'* Unit: km/h'}
         </TextElement>
       </View>
 
+      <View style={styles.destinationSection}>
+        <FlagIcon width={28} height={28} />
+        <View style={styles.destinationTextContainer}>
+          <TextElement
+            fontWeight={'bold'}
+            cStyle={{color: Colors.primary}}
+            fontSize={'s'}>
+            Start point:
+          </TextElement>
+          <TextElement
+            cStyle={styles.destinationText}
+            numberOfLines={1}
+            fontSize={'s'}>
+            {currentRecord.pickupAddress}
+          </TextElement>
+        </View>
+      </View>
+      <View style={styles.destinationSection}>
+        <TripIcon width={28} height={28} />
+        <View style={styles.destinationTextContainer}>
+          <TextElement
+            fontWeight={'bold'}
+            cStyle={{color: Colors.tertiary}}
+            fontSize={'s'}>
+            Destination:
+          </TextElement>
+          <TextElement
+            cStyle={styles.destinationText}
+            numberOfLines={1}
+            fontSize={'s'}>
+            {currentRecord.destinationAddress}
+          </TextElement>
+        </View>
+      </View>
+
       <View style={styles.analyticsContainer}>
-        {aiResults === null ? (
+        {/* {aiResults === null ? (
           <Fragment>
             <ActivityIndicator color={Colors.primary} size={'small'} />
             <TextElement cStyle={{opacity: 0.5}} fontSize={'s'}>
@@ -201,7 +237,7 @@ const StatisticBottomSheet = () => {
               fontSize="lg">{`Drive Analytics:`}</TextElement>
             <TextElement>{`* ${aiResults}`}</TextElement>
           </Fragment>
-        )}
+        )} */}
       </View>
     </Fragment>
   );
@@ -270,6 +306,19 @@ const styles = StyleSheet.create({
   icon: {
     marginBottom: '2%',
     opacity: 0.8,
+  },
+  destinationSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: '2%',
+    width: PropDimensions.standardWidth,
+    alignSelf: 'center',
+  },
+  destinationTextContainer: {
+    marginLeft: '4%',
+  },
+  destinationText: {
+    width: Dimensions.get('window').width * 0.7,
   },
 });
 

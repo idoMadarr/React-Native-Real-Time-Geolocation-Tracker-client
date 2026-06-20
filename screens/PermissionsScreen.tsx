@@ -111,7 +111,7 @@ const PermissionsScreen = () => {
     <SafeAreaView edges={['bottom']} style={styles.screen}>
       <StatusBarElement
         barStyle={'dark-content'}
-        backgroundColor={Colors.white}
+        backgroundColor={Colors.primary}
       />
       <CustomBackground />
       <ScrollView showsVerticalScrollIndicator={false}>

@@ -1,4 +1,4 @@
-import React, {Fragment, useRef, useState} from 'react';
+import React, {Fragment, useRef, useState, RefObject} from 'react';
 import {
   StyleSheet,
   View,
@@ -219,7 +219,7 @@ const DestinationScreen = () => {
       />
       <View style={styles.searchContainer}>
         <InputElement
-          inputRef={inputRef}
+          inputRef={inputRef as RefObject<any>}
           value={address}
           label={'Address'}
           onChangeText={text => setAddress(text)}
@@ -286,26 +286,28 @@ const DestinationScreen = () => {
           </MapView>
           <View style={styles.buttonsContainer}>
             <ButtonElement
-              title={'Set Alert'}
-              backgroundColor={Colors.secondary}
+              title={'+'}
               titleColor={'white'}
-              cStyle={styles.setNotificationButton}
+              cStyle={styles.button}
               enable={geofence ? true : false}
               onPress={onSetAlert}
+              backgroundColor={Colors.secondary}
             />
             <ButtonElement
               title={'Clear'}
               onPress={onClear}
-              cStyle={styles.removeNotificationButton}
+              fontSize={'s'}
+              cStyle={styles.button}
               titleColor={Colors.white}
               backgroundColor={Colors.placeholder}
             />
             <ButtonElement
               title={'Back'}
               onPress={goBack}
+              fontSize={'s'}
               backgroundColor={Colors.white}
               titleColor={Colors.dark}
-              cStyle={styles.backButton}
+              cStyle={styles.button}
             />
           </View>
         </Fragment>
@@ -348,19 +350,17 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     position: 'absolute',
-    bottom: '6%',
-    width: PropDimensions.standardWidth,
-    flexDirection: 'row',
+    bottom: '8%',
+    right: '2%',
+    gap: 10,
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
-  setNotificationButton: {
-    width: PropDimensions.fullWidth * 0.4,
-    borderWidth: 0,
-  },
-  removeNotificationButton: {
-    width: PropDimensions.fullWidth * 0.2,
-  },
-  backButton: {
-    width: PropDimensions.fullWidth * 0.2,
+  button: {
+    width: PropDimensions.fullWidth * 0.15,
+    height: PropDimensions.fullWidth * 0.15,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: Colors.placeholder,
   },
 });

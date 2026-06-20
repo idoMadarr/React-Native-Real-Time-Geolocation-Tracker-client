@@ -110,7 +110,7 @@ const PermissionsScreen = () => {
   return (
     <SafeAreaView edges={['bottom']} style={styles.screen}>
       <StatusBarElement
-        barStyle={'light-content'}
+        barStyle={'dark-content'}
         backgroundColor={Colors.white}
       />
       <CustomBackground />

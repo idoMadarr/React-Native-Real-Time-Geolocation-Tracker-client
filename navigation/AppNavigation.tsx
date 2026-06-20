@@ -56,7 +56,7 @@ const AppNavigation = () => {
                 <GenericHeader
                   title={'Setting Permissions'}
                   description={
-                    'We needs the following permissions to record your trips'
+                    'We needs the following permissions\nto record your trips'
                   }
                   backDestination={ScreenType.Main}
                 />
@@ -83,7 +83,9 @@ const AppNavigation = () => {
               header: () => (
                 <GenericHeader
                   title={'Trips History'}
-                  description={'Explore your past trips and driving activity'}
+                  description={
+                    'Review your trip history and driving\nbehavior insights'
+                  }
                   backDestination={ScreenType.Main}
                 />
               ),

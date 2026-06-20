@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Dimensions, Pressable, StyleSheet, View} from 'react-native';
 import {PropDimensions} from '../../services/dimensions';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import TextElement from '../Resuable/TextElement';
@@ -7,6 +7,7 @@ import {BackIcon, ListIcon, StatisticIcon} from '../../assets/svgs';
 import {goBack, navigate} from '../../utils/rootNavigation';
 import Colors from '../../assets/colors/palette.json';
 import {useAppSelector} from '../../redux/hooks/hooks';
+
 interface GenericHeaderPropsType {
   title: string;
   description?: string;
@@ -30,7 +31,7 @@ const GenericHeader: React.FC<GenericHeaderPropsType> = ({
 
   return (
     <SafeAreaView style={styles.headerContainer}>
-      <View>
+      <View style={styles.content}>
         <View style={styles.titleContainer}>
           {title === 'Trips History' ? (
             <ListIcon width={28} height={28} color={Colors.dark} />
@@ -71,26 +72,26 @@ const GenericHeader: React.FC<GenericHeaderPropsType> = ({
 const styles = StyleSheet.create({
   headerContainer: {
     height: PropDimensions.genericHeaderHeight,
+    width: PropDimensions.fullWidth,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    backgroundColor: Colors.white,
-    elevation: 5,
+    paddingHorizontal: '18%',
+    backgroundColor: Colors.primary,
+  },
+  content: {
+    height: Dimensions.get('window').height * 0.1,
   },
   rotate: {
     transform: [{rotate: '180deg'}],
   },
   titleContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
+    gap: 10,
   },
   title: {
-    color: Colors.dark,
+    color: Colors.white,
   },
   description: {
-    width: PropDimensions.standardWidth * 0.9,
     opacity: 0.5,
   },
 });

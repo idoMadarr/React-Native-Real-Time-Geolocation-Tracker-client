@@ -151,20 +151,18 @@ const DriveScreen = () => {
           you and give you some details about your trip.
         </TextElement>
       </View>
-
+      <LottieView
+        autoPlay
+        loop
+        source={require('../assets/animations/car_animation.json')}
+        style={styles.lottie}
+      />
       <ButtonElement
         title={'STOP'}
         titleColor={Colors.white}
         onPress={onStop}
         backgroundColor={Colors.primary}
         cStyle={styles.stopButton}
-      />
-
-      <LottieView
-        autoPlay
-        loop
-        source={require('../assets/animations/car_animation.json')}
-        style={styles.lottie}
       />
     </View>
   );
@@ -180,7 +178,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: PropDimensions.fullWidth,
-    height: Dimensions.get('window').height * 0.5,
+    height: Dimensions.get('window').height * 0.4,
     opacity: 0.4,
   },
   stopButton: {
@@ -189,13 +187,14 @@ const styles = StyleSheet.create({
     height: PropDimensions.circleButton,
     elevation: 5,
     alignSelf: 'center',
+    zIndex: 10,
   },
   lottie: {
     height: PropDimensions.fullHeight * 0.3,
     width: PropDimensions.fullWidth,
     position: 'absolute',
-    bottom: -Dimensions.get('window').height * 0.1,
-    opacity: 0.5,
+    bottom: -Dimensions.get('window').height * 0.05,
+    zIndex: 5,
   },
 });
 

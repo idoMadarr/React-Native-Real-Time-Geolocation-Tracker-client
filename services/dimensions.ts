@@ -8,5 +8,5 @@ export enum PropDimensions {
   sectionHeight = Dimensions.get('window').height * 0.25,
   standardWidth = Dimensions.get('window').width * 0.85,
   circleButton = Dimensions.get('window').width * 0.32,
-  genericHeaderHeight = Dimensions.get('window').height * 0.14,
+  genericHeaderHeight = Dimensions.get('window').height * 0.15,
 }

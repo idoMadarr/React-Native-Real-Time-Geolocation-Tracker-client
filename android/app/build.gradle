@@ -88,8 +88,8 @@ android {
         applicationId "com.roadrecorder"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 19
-        versionName "3.0.6"
+        versionCode 20
+        versionName "3.0.7"
         manifestPlaceholders = [
             MAPS_API_KEY: localProperties.getProperty("MAPS_API_KEY", "")
         ]

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions, Pressable, StyleSheet, View} from 'react-native';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {PropDimensions} from '../../services/dimensions';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import TextElement from '../Resuable/TextElement';
@@ -50,7 +50,7 @@ const GenericHeader: React.FC<GenericHeaderPropsType> = ({
         </TextElement>
       </View>
       {appReady && (
-        <View style={styles.content}>
+        <View style={styles.backContainer}>
           <Pressable
             onPress={onPress}
             style={({pressed}) => {
@@ -78,12 +78,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    paddingBottom: '5%',
     paddingHorizontal: '18%',
     backgroundColor: Colors.primary,
   },
   content: {
-    height: Dimensions.get('window').height * 0.1,
+    height: PropDimensions.genericHeaderHeight * 0.6,
+    width: '90%',
+    alignSelf: 'flex-start',
+    justifyContent: 'flex-end',
   },
   rotate: {
     transform: [{rotate: '180deg'}],
@@ -97,6 +99,9 @@ const styles = StyleSheet.create({
   },
   description: {
     opacity: 0.6,
+  },
+  backContainer: {
+    width: '10%',
   },
 });
 

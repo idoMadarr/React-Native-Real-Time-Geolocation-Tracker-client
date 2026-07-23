@@ -79,12 +79,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     paddingHorizontal: '18%',
+    paddingBottom: '6%',
     backgroundColor: Colors.primary,
   },
   content: {
     height: PropDimensions.genericHeaderHeight * 0.6,
     width: '90%',
-    alignSelf: 'flex-start',
     justifyContent: 'flex-end',
   },
   rotate: {
@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   backContainer: {
+    height: PropDimensions.genericHeaderHeight * 0.6,
     width: '10%',
   },
 });
